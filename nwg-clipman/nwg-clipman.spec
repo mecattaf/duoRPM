@@ -1,3 +1,5 @@
+# source: https://github.com/solopasha/hyprlandRPM/tree/master/nwg-clipman
+
 Name:           nwg-clipman
 Version:        0.2.4
 Release:        %autorelease

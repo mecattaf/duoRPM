@@ -1,3 +1,5 @@
+# source: self
+
 Name:           wl-gammarelay-rs
 Version:        1.0.0
 Release:        %autorelease

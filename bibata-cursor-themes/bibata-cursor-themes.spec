@@ -1,3 +1,4 @@
+# source: https://github.com/peterwu/copr-rendezvous/blob/main/bibata-cursor-themes/bibata-cursor-themes.spec
 %global         source_name Bibata_Cursor
 %global         debug_package %{nil}
 
@@ -77,40 +78,4 @@ done
 
 %changelog
 * Tue 18 Jun 2024 02:07:00 PM EDT
-- New Release - v2.0.7
-
-* Thu 25 Jan 2024 09:21:25 PST
-- New Release - v2.0.6
-
-* Sun 31 Dec 2023 09:51:50 AM EST
-- New Release - v2.0.5
-
-* Sat 16 Dec 2023 05:38:01 PM EST
-- New Release - v2.0.4
-
-* Tue 06 Dec 2022 09:17:20 AM EST
-- New Release - v2.0.3
-
-* Mon Oct 10 09:56:59 AM EDT 2022
-- New Release - v2.0.2
-
-* Thu Oct 06 09:27:08 EDT 2022 Peter Wu
-- New Release - v2.0.1
-
-* Mon Oct  3 12:07:28 EDT 2022 Peter Wu
-- New Release - v2.0.0
-
-* Sun 05 Jun 2022 07:54:12 PM EDT Peter Wu
-- Use bitmaps.zip to build
-
-* Mon Jul 12 09:44:23 AM EDT 2021 Peter Wu
-- New Release - v1.1.2
-
-* Fri Mar 26 09:52:42 AM EDT 2021 Peter Wu
-- New Release - v1.1.1
-
-* Fri Feb 26 09:45:42 EST 2021 Peter Wu
-- New Release - v1.1.0
-
-* Tue Nov 17 09:42:13 EST 2020 Peter Wu <peterwu@hotmail.com>
-- New Release - v1.0.3
+- Copied over from user - v1.0.0
