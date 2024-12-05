@@ -1,4 +1,4 @@
-.PHONY: prepare goprep rustprep pythonprep srpm
+.PHONY: prepare goprep rustprep pythonprep themesprep srpm prebuild
 
 specfile = $(notdir $(spec))
 
@@ -16,7 +16,6 @@ goprep:
 # Rust package preparation
 rustprep:
 	dnf install --nodocs -y rust cargo git-core
-	# We'll vendor dependencies during prep phase in spec file
 
 # Python package preparation
 pythonprep:
