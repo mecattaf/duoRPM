@@ -1,38 +1,47 @@
-# source: self
+# Theme packaging for GTK environments
+# Source: https://github.com/catppuccin/gtk
 
 Name:           catppuccin-theme
-Version:        1.0.0
+Version:        0.7.1
 Release:        1%{?dist}
 Summary:        Catppuccin themes and icons for GTK environments
 
-License:        GPL-3.0
-URL:            https://github.com/mecattaf/catppuccin-theme
-Source0:        %{url}/releases/download/v%{version}/catppuccin-theme.tar.gz
+License:        MIT
+URL:            https://github.com/catppuccin/gtk
+Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
 
 BuildArch:      noarch
+BuildRequires:  sassc
+BuildRequires:  meson
+BuildRequires:  ninja-build
+BuildRequires:  gtk3-devel
+BuildRequires:  glib2-devel
+BuildRequires:  gtk4-devel
+
+Requires:       gtk3
+Requires:       gtk4
+Recommends:     gtk-murrine-engine
 
 %description
-Catppuccin themes and icons offering a cozy and warm color scheme 
-for GTK environments.
+Soothing pastel theme for GTK3/4 and various applications. The Catppuccin theme
+provides a warm and cozy aesthetic for your desktop environment with multiple
+flavors: Mocha, Macchiato, Frappé, and Latte.
 
 %prep
-%autosetup
+%autosetup -n gtk-%{version}
+
+%build
+%meson
+%meson_build
 
 %install
-rm -rf %{buildroot}
-mkdir -p %{buildroot}%{_datadir}
-
-# Extract the tar.gz file directly into the buildroot.
-tar -xzf %{SOURCE0} -C %{buildroot}%{_datadir}
-
-# Move the icons and themes to the expected locations.
-mv %{buildroot}%{_datadir}/catppuccin-theme/icons %{buildroot}%{_datadir}
-mv %{buildroot}%{_datadir}/catppuccin-theme/themes %{buildroot}%{_datadir}
+%meson_install
 
 %files
-%{_datadir}/icons/*
-%{_datadir}/themes/*
+%license LICENSE
+%doc README.md
+%{_datadir}/themes/Catppuccin-*
 
 %changelog
-* Wed Dec 04 2024 Maintainer <thomasmecattaf@gmail.com> - 1.0.0
-- Initial release using GitHub releases
+* Thu Dec 05 2024 Maintainer <thomasmecattaf@gmail.com> - 0.7.1-1
+- Initial package for zenRPM repository

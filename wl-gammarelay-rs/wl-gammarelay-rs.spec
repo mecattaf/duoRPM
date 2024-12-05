@@ -12,6 +12,12 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 BuildRequires:  cargo-rpm-macros >= 24
 BuildRequires:  rust
 BuildRequires:  cargo
+# Add pkg-config for potential system dependencies
+BuildRequires:  pkg-config
+
+# Runtime requirements for Wayland apps
+Requires:       wayland
+Recommends:     gdbus-codegen
 
 %description
 A simple program that provides DBus interface to control display temperature 
@@ -24,10 +30,13 @@ cargo vendor
 %cargo_prep -v vendor
 
 %build
-cargo build --locked --profile rpm
+%cargo_build --profile rpm
 
 %install
-rm -rf %{buildroot}
+%cargo_install
+# Ensure directory exists
+mkdir -p %{buildroot}%{_bindir}
+# Install the binary
 install -Dpm755 target/release/%{name} %{buildroot}%{_bindir}/%{name}
 
 %files
@@ -36,5 +45,4 @@ install -Dpm755 target/release/%{name} %{buildroot}%{_bindir}/%{name}
 %{_bindir}/%{name}
 
 %changelog
-* Wed Dec 04 2024 Maintainer <thomasmecattaf@gmail.com> - 1.0.0
-- Initial release using GitHub releases
+%autochangelog

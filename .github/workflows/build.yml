@@ -1,0 +1,75 @@
+name: Build packages
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '**/*.spec'
+      - '.copr/**'
+      - '.github/**'
+
+jobs:
+  main:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[build-all]') ||
+      contains(github.event.head_commit.message, '[build-go]') ||
+      contains(github.event.head_commit.message, '[build-rust]') ||
+      contains(github.event.head_commit.message, '[build-python]') ||
+      contains(github.event.head_commit.message, '[build-themes]')
+    runs-on: ubuntu-latest
+    container:
+      image: 'registry.fedoraproject.org/fedora-minimal:latest'
+
+    steps:
+      - name: Prepare
+        run: |
+          microdnf -y install --nodocs --setopt=install_weak_deps=0 \
+            copr-cli parallel
+
+      - name: Copr config
+        env:
+          COPR_CONF: ${{ secrets.COPR_CONFIG }}
+        run: |
+          mkdir -p ~/.config
+          echo "$COPR_CONF" > ~/.config/copr
+
+      - uses: actions/checkout@v4
+
+      # Build Go packages (cliphist and nwg-look)
+      - name: Build Go packages
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-go]')
+        run: |
+          # Build cliphist first as it's a dependency
+          cliphist_build_id=$(copr-cli build-package mecattaf/zenRPM --nowait --name cliphist | sed -n 's/.*builds: \(.*\)/\1'/p)
+          # Build nwg-look after cliphist
+          copr-cli build-package mecattaf/zenRPM --nowait --name nwg-look --after-build-id "$cliphist_build_id"
+
+      # Build Rust package
+      - name: Build Rust package
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-rust]')
+        run: |
+          copr-cli build-package mecattaf/zenRPM --nowait --name wl-gammarelay-rs
+
+      # Build Python packages
+      - name: Build Python packages
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-python]')
+        run: |
+          # Build nwg-clipman after cliphist
+          copr-cli build-package mecattaf/zenRPM --nowait --name nwg-clipman --after-build-id "$cliphist_build_id"
+          copr-cli build-package mecattaf/zenRPM --nowait --name python-autotiling
+
+      # Build theme packages
+      - name: Build theme packages
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-themes]')
+        run: |
+          parallel copr-cli build-package mecattaf/zenRPM --nowait --name ::: \
+            bibata-cursor-themes \
+            catppuccin-theme
+
+      # Optional status check for all builds
+      - name: Check build status
+        if: always()
+        run: |
+          sleep 30  # Give COPR time to register all builds
+          copr-cli list-builds mecattaf/zenRPM --with-details
