@@ -2,7 +2,7 @@
 # Source: https://github.com/catppuccin/gtk
 
 Name:           catppuccin-theme
-Version:        0.7.1
+Version:        1.0.3
 Release:        1%{?dist}
 Summary:        Catppuccin themes and icons for GTK environments
 
