@@ -9,10 +9,9 @@ License:        GPL-3.0-only
 URL:            https://github.com/MaxVerevkin/wl-gammarelay-rs
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
-BuildRequires:  cargo-rpm-macros >= 24
 BuildRequires:  rust
 BuildRequires:  cargo
-# Add pkg-config for potential system dependencies
+BuildRequires:  rust-packaging
 BuildRequires:  pkg-config
 
 # Runtime requirements for Wayland apps
@@ -26,14 +25,20 @@ to redshift/gammastep.
 
 %prep
 %autosetup
-cargo vendor
-%cargo_prep -v vendor
+%{__cargo} vendor
+mkdir -p .cargo
+cat > .cargo/config << EOF
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "vendor"
+EOF
 
 %build
-%cargo_build --profile rpm
+%{__cargo} build --release
 
 %install
-%cargo_install
 # Ensure directory exists
 mkdir -p %{buildroot}%{_bindir}
 # Install the binary

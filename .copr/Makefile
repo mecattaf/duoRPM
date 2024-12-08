@@ -31,7 +31,7 @@ prebuild:
 		buildtype="rust"; \
 	elif grep -q "Name:.*cliphist\|Name:.*nwg-look" "$(SPECFILE)"; then \
 		buildtype="go"; \
-	elif grep -q "Name:.*python-autotiling\|Name:.*nwg-clipman" "$(SPECFILE)"; then \
+	elif grep -q "Name:.*python-autotiling\|Name:.*nwg-clipman\|^Name:.*python-" "$(SPECFILE)"; then \
 		buildtype="python"; \
 	elif grep -q "Name:.*bibata-cursor-themes" "$(SPECFILE)"; then \
 		buildtype="theme"; \
