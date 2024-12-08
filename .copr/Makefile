@@ -1,59 +1,56 @@
 .PHONY: prepare goprep rustprep pythonprep themesprep srpm prebuild
 
-specfile = $(notdir $(spec))
+# Define variables
+BUILDDIR := $(shell pwd)
+SPECFILE := $(spec)
 
 prepare:
 	dnf install --nodocs -y rpm-build rpmdevtools
 
-# Go package preparation with vendoring support
-goprep:
+goprep: prepare
 	dnf install --nodocs -y \
 		--repofrompath 'golang-rawhide,https://download.copr.fedorainfracloud.org/results/@go-sig/golang-rawhide/fedora-$$releasever-$$basearch/' \
 		--setopt='golang-rawhide.gpgkey=https://download.copr.fedorainfracloud.org/results/@go-sig/golang-rawhide/pubkey.gpg' \
 		golang git-core
 	go env -w GOPROXY=https://proxy.golang.org,direct
 	go env -w GOSUMDB=sum.golang.org
-	if [ -f bundle_go_deps_for_rpm.sh ]; then \
-		bash bundle_go_deps_for_rpm.sh $(specfile); \
-	fi
+	test -f bundle_go_deps_for_rpm.sh && bash bundle_go_deps_for_rpm.sh $(SPECFILE) || true
 
-# Rust package preparation
-rustprep:
-	dnf install --nodocs -y \
-		rust cargo git-core pkg-config
+rustprep: prepare
+	dnf install --nodocs -y rust cargo git-core pkg-config
 
-# Python package preparation
-pythonprep:
-	dnf install --nodocs -y \
-		python3-devel python3-pip python3-wheel python3-setuptools
+pythonprep: prepare
+	dnf install --nodocs -y python3-devel python3-pip python3-wheel python3-setuptools
 
-# Theme and static content preparation with Python support
-themesprep:
-	dnf install --nodocs -y \
-		git-core python3-devel python3-pip python3-wheel
+themesprep: prepare
+	dnf install --nodocs -y git-core python3-devel python3-pip python3-wheel
 
-# Determine build type and apply appropriate preparation
 prebuild:
-	@if grep -q "Name:.*wl-gammarelay-rs" $(specfile); then \
-		$(MAKE) rustprep; \
-	elif grep -q "Name:.*cliphist\|Name:.*nwg-look" $(specfile); then \
-		$(MAKE) goprep; \
-	elif grep -q "Name:.*python-autotiling\|Name:.*nwg-clipman" $(specfile); then \
-		$(MAKE) pythonprep; \
-	elif grep -q "Name:.*bibata-cursor-themes" $(specfile); then \
-		$(MAKE) themesprep; \
-	else \
-		echo "Unknown package type. Check spec file: $(specfile)"; \
-		exit 1; \
-	fi
+	@buildtype="unknown"; \
+	if grep -q "Name:.*wl-gammarelay-rs" "$(SPECFILE)"; then \
+		buildtype="rust"; \
+	elif grep -q "Name:.*cliphist\|Name:.*nwg-look" "$(SPECFILE)"; then \
+		buildtype="go"; \
+	elif grep -q "Name:.*python-autotiling\|Name:.*nwg-clipman" "$(SPECFILE)"; then \
+		buildtype="python"; \
+	elif grep -q "Name:.*bibata-cursor-themes" "$(SPECFILE)"; then \
+		buildtype="theme"; \
+	fi; \
+	case $$buildtype in \
+		"rust") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) rustprep;; \
+		"go") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) goprep;; \
+		"python") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) pythonprep;; \
+		"theme") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) themesprep;; \
+		*) echo "Unknown package type in $(SPECFILE)"; exit 1;; \
+	esac
 
 srpm: prepare prebuild
-	spectool -g ./$(specfile)
+	cd $(dir $(SPECFILE)) && spectool -g $(notdir $(SPECFILE))
 	rpmbuild -bs \
-		--define "_sourcedir ${PWD}" \
-		--define "_specdir ${PWD}" \
-		--define "_builddir ${PWD}" \
+		--define "_sourcedir $(dir $(SPECFILE))" \
+		--define "_specdir $(dir $(SPECFILE))" \
+		--define "_builddir $(BUILDDIR)" \
 		--define "_srcrpmdir $(outdir)" \
-		--define "_rpmdir ${PWD}" \
-		--define "_buildrootdir ${PWD}/.build" \
-		$(specfile)
+		--define "_rpmdir $(BUILDDIR)" \
+		--define "_buildrootdir $(BUILDDIR)/.build" \
+		$(SPECFILE)
