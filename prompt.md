@@ -185,8 +185,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-themes]')
         run: |
           parallel copr-cli build-package mecattaf/zenRPM --nowait --name ::: \
-            bibata-cursor-themes \
-            catppuccin-theme
+            bibata-cursor-themes 
 
       # Optional status check for all builds
       - name: Check build status
@@ -291,5 +290,4 @@ Some packages come from solopasha's repository:
 And some are my custom packages:
 - wl-gammarelay-rs (Rust package)
 - bibata-cursor-themes (Theme package)
-- catppuccin-theme (Theme package)
 - python-autotiling (Python package)
