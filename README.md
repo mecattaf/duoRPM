@@ -60,6 +60,51 @@ If you prefer using the command line:
 copr-cli create your-repo-name --chroot fedora-rawhide-x86_64 --description "Your repository description"
 ```
 
+## Adding Packages to Your COPR Repository
+
+After creating your COPR repository, you need to configure each package before they can be built. This can be done through the COPR web interface.
+
+### Package Configuration Steps
+
+1. Navigate to your COPR repository
+2. Click "Packages" then "New Package"
+3. For each package, configure:
+
+   **1. Basic Package Information**
+   - Package name: Name of your package (e.g., cliphist)
+   - Type: Git
+   - Clone url: URL to your GitHub repository (e.g., https://github.com/yourusername/yourrepo.git)
+   
+   **2. Source Location**
+   - Subdirectory: Folder name containing the package (e.g., "cliphist")
+   - Spec File: Name of the spec file (e.g., "cliphist.spec")
+   
+   **3. Build Method**
+   - Select "make srpm" when using the provided `.copr/Makefile`
+   
+   **4. Build Settings** (Optional)
+   - Chroot denylist: Leave empty to build for all configured platforms
+   - Max number of builds: Default unless storage limits needed
+   - Max build time: Default (5h) is usually sufficient
+   - Auto-rebuild: Enable for automatic rebuilds on repository changes
+
+### Example Package Configuration
+
+Using `cliphist` as an example:
+```ini
+Package name: cliphist
+Type: Git
+Clone url: https://github.com/yourusername/yourrepo.git
+Subdirectory: cliphist
+Spec File: cliphist.spec
+Build method: make srpm
+```
+
+Repeat this configuration for each package in your repository. The build order will be managed by the GitHub Actions workflow based on dependencies specified in your build.yml file.
+Note: The `make srpm` build method is used because this repository includes a `.copr/Makefile` that handles the SRPM creation process. This method allows for sophisticated build customization and dependency management.
+
+
+
 ## GitHub Repository Configuration
 
 1. Enable GitHub Actions:
