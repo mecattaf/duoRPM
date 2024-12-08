@@ -39,19 +39,11 @@ EOF
 %{__cargo} build --release
 
 %install
-# Ensure directory exists
 mkdir -p %{buildroot}%{_bindir}
-# Install the binary
 install -Dpm755 target/release/%{name} %{buildroot}%{_bindir}/%{name}
 
-# Install license file
-install -Dpm644 LICENSE %{buildroot}%{_datadir}/licenses/%{name}/LICENSE
-
 %files
-%license LICENSE
-%doc README.md
 %{_bindir}/%{name}
-%{_datadir}/licenses/%{name}/LICENSE
 
 %changelog
 %autochangelog
