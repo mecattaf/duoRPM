@@ -63,8 +63,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-themes]')
         run: |
           parallel copr-cli build-package mecattaf/zenRPM --nowait --name ::: \
-            bibata-cursor-themes \
-            catppuccin-theme
+            bibata-cursor-themes 
 
       # Check build status (fixed version)
       - name: Check build status
