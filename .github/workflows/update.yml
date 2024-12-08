@@ -17,7 +17,7 @@ jobs:
       - name: Prepare
         run: |
           microdnf -y install --nodocs --setopt=install_weak_deps=0 \
-            git-core rpm-build curl perl-interpreter jq rpmdevtools copr-cli parallel tar \
+            git-core rpm-build curl perl-interpreter jq rpmdevtools copr-cli parallel tar gzip \
             python3-pip golang cargo  # Added for version checking
 
       - name: Copr config
