@@ -25,7 +25,7 @@ jobs:
       - name: Prepare
         run: |
           microdnf -y install --nodocs --setopt=install_weak_deps=0 \
-            copr-cli parallel
+            copr-cli parallel tar
 
       - name: Copr config
         env:
