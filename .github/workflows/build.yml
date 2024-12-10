@@ -40,10 +40,11 @@ jobs:
       - name: Build Go packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-go]')
         run: |
-          # Build cliphist first as it's a dependency
+          # Build xcur2png and cliphist first as they're dependencies
+          xcur2png_build_id=$(copr-cli build-package mecattaf/zenRPM --nowait --name xcur2png | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
           cliphist_build_id=$(copr-cli build-package mecattaf/zenRPM --nowait --name cliphist | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
-          # Build nwg-look after cliphist
-          copr-cli build-package mecattaf/zenRPM --nowait --name nwg-look --after-build-id "$cliphist_build_id"
+          # Build nwg-look after its dependencies
+          copr-cli build-package mecattaf/zenRPM --nowait --name nwg-look --after-build-id "$xcur2png_build_id"
 
       # Build Rust package
       - name: Build Rust package
