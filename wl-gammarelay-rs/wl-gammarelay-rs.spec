@@ -1,5 +1,3 @@
-# source: self
-
 Name:           wl-gammarelay-rs
 Version:        1.0.0
 Release:        %autorelease
@@ -9,14 +7,15 @@ License:        GPL-3.0-only
 URL:            https://github.com/MaxVerevkin/wl-gammarelay-rs
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
+BuildRequires:  gcc
 BuildRequires:  rust
 BuildRequires:  cargo
 BuildRequires:  rust-packaging
 BuildRequires:  pkg-config
+BuildRequires:  pkgconfig(wayland-client)
+BuildRequires:  pkgconfig(wayland-protocols)
 
-# Runtime requirements for Wayland apps
-Requires:       wayland
-Recommends:     gdbus-codegen
+Requires:       dbus
 
 %description
 A simple program that provides DBus interface to control display temperature 
