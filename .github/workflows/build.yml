@@ -16,6 +16,7 @@ jobs:
       contains(github.event.head_commit.message, '[build-go]') ||
       contains(github.event.head_commit.message, '[build-rust]') ||
       contains(github.event.head_commit.message, '[build-python]') ||
+      contains(github.event.head_commit.message, '[build-gcc]') ||
       contains(github.event.head_commit.message, '[build-themes]')
     runs-on: ubuntu-latest
     container:
@@ -35,6 +36,12 @@ jobs:
           echo "$COPR_CONF" > ~/.config/copr
 
       - uses: actions/checkout@v4
+
+      # Build GCC packages (lisgd)
+      - name: Build GCC packages
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-gcc]')
+        run: |
+          copr-cli build-package mecattaf/zenRPM --nowait --name lisgd
 
       # Build Go packages (cliphist and nwg-look)
       - name: Build Go packages

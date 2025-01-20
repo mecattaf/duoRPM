@@ -1,4 +1,4 @@
-.PHONY: prepare goprep rustprep pythonprep themesprep srpm prebuild
+.PHONY: prepare goprep rustprep pythonprep themesprep gccprep srpm prebuild
 
 # Define variables
 BUILDDIR := $(shell pwd)
@@ -25,6 +25,9 @@ pythonprep: prepare
 themesprep: prepare
 	dnf install --nodocs -y git-core python3-devel python3-pip python3-wheel
 
+gccprep: prepare
+	dnf install --nodocs -y gcc make
+
 prebuild:
 	@buildtype="unknown"; \
 	if grep -q "Name:.*wl-gammarelay-rs" "$(SPECFILE)"; then \
@@ -35,12 +38,15 @@ prebuild:
 		buildtype="python"; \
 	elif grep -q "Name:.*bibata-cursor-themes" "$(SPECFILE)"; then \
 		buildtype="theme"; \
+	elif grep -q "Name:.*lisgd" "$(SPECFILE)"; then \
+		buildtype="gcc"; \
 	fi; \
 	case $$buildtype in \
 		"rust") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) rustprep;; \
 		"go") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) goprep;; \
 		"python") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) pythonprep;; \
 		"theme") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) themesprep;; \
+		"gcc") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) gccprep;; \
 		*) echo "Unknown package type in $(SPECFILE)"; exit 1;; \
 	esac
 
