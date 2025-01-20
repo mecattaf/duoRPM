@@ -11,6 +11,8 @@ BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  libinput-devel
 BuildRequires:  systemd-devel
+BuildRequires:  libX11-devel
+BuildRequires:  wayland-devel
 
 %description
 Lisgd (libinput synthetic gesture daemon) lets you bind gestures based on
