@@ -127,7 +127,7 @@ git commit -m "Initial repository setup [build-all]"
 git push
 ```
 
-The `[build-all]` tag in the commit message triggers the initial build of all packages.
+The `[build-all]` tag in the commit message triggers the initial build of all packages. 
 
 ## Monitoring Your Setup
 
