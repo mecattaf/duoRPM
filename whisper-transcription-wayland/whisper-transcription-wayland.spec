@@ -44,11 +44,11 @@ EOF
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -Dpm755 target/release/%{name} %{buildroot}%{_bindir}/%{name}
+install -Dpm755 target/release/whisper-transcription %{buildroot}%{_bindir}/whisper-transcription
 
 %files
 %license LICENSE
-%{_bindir}/%{name}
+%{_bindir}/whisper-transcription
 
 %changelog
 %autochangelog
