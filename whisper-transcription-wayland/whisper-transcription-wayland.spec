@@ -14,6 +14,14 @@ BuildRequires:  rust-packaging
 BuildRequires:  pkg-config
 BuildRequires:  alsa-lib-devel
 BuildRequires:  pulseaudio-libs-devel
+BuildRequires:  libxkbcommon-devel
+BuildRequires:  libX11-devel
+BuildRequires:  libXi-devel
+BuildRequires:  libXtst-devel
+BuildRequires:  mesa-libGL-devel
+BuildRequires:  wayland-devel
+BuildRequires:  libinput-devel
+BuildRequires:  dbus-devel
 
 %description
 A speech-to-text transcription tool for Wayland that records audio and
