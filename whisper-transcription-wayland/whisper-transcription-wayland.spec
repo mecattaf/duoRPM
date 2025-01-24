@@ -1,4 +1,4 @@
-Name:           whisper-transcription
+Name:           whisper-transcription-wayland
 Version:        1.0.0
 Release:        %autorelease
 Summary:        Speech-to-text transcription tool for Wayland
