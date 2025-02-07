@@ -30,8 +30,8 @@ gccprep: prepare
 
 prebuild:
 	@buildtype="unknown"; \
-	if grep -q "Name:.*wl-gammarelay-rs\|Name:.*whisper-transcription-wayland" "$(SPECFILE)"; then \
-    buildtype="rust"; \
+	if grep -q "Name:.*wl-gammarelay-rs" "$(SPECFILE)"; then \
+		buildtype="rust"; \
 	elif grep -q "Name:.*cliphist\|Name:.*nwg-look\|Name:.*xcur2png" "$(SPECFILE)"; then \
 		buildtype="go"; \
 	elif grep -q "Name:.*python-autotiling\|Name:.*nwg-clipman\|^Name:.*python-" "$(SPECFILE)"; then \
