@@ -33,8 +33,16 @@ and can directly edit code files based on the AI's suggestions.
 %autosetup -n %{name}-%{version}
 
 %build
-# Use pip's wheel support to prefer pre-built wheels
-pip3 install --only-binary :all: --no-deps --ignore-installed -r requirements.txt
+# Configure pip to use multiple indexes and find compatible wheels
+export PIP_EXTRA_INDEX_URL="https://pypi.org/simple"
+export PIP_FIND_LINKS="https://download.pytorch.org/whl/cpu"
+
+# First install basic dependencies that don't need compilation
+pip3 install --upgrade pip wheel setuptools
+# Then install aider's requirements
+PYTHONPATH="" pip3 install --no-deps --no-cache-dir -r requirements.txt || true
+# Try to install any failed dependencies without version constraints
+pip3 install --no-deps openai anthropic tiktoken rich prompt-toolkit pygments diskcache gitpython configargparse
 %py3_build
 
 %install
