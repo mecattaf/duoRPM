@@ -16,8 +16,10 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-wheel
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+BuildRequires:  gcc-gfortran
 BuildRequires:  make
 BuildRequires:  git-core
+BuildRequires:  pkgconfig
 
 # Runtime dependency just for Python 3.12
 Requires:       python3 >= 3.12
@@ -31,8 +33,8 @@ and can directly edit code files based on the AI's suggestions.
 %autosetup -n %{name}-%{version}
 
 %build
-# Install all dependencies using pip with build isolation
-pip3 install --no-deps --ignore-installed -r requirements.txt
+# Use pip's wheel support to prefer pre-built wheels
+pip3 install --only-binary :all: --no-deps --ignore-installed -r requirements.txt
 %py3_build
 
 %install
