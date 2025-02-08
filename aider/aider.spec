@@ -27,7 +27,11 @@ and can directly edit code files based on the AI's suggestions.
 # Nothing to build
 
 %install
-# Install directly from PyPI using explicit python3.12 module call
+# Ensure pip is available for Python 3.12
+python3.12 -m ensurepip
+python3.12 -m pip install --upgrade pip
+
+# Install directly from PyPI
 python3.12 -m pip install --no-deps --root %{buildroot} aider-chat==%{version}
 
 %files
