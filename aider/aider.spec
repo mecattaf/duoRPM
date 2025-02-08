@@ -8,10 +8,9 @@ URL:            https://github.com/paul-gauthier/aider
 
 BuildArch:      noarch
 
-BuildRequires:  python3-devel
+BuildRequires:  python3.12
 BuildRequires:  python3-pip
 BuildRequires:  python3-wheel
-BuildRequires:  python3.12
 
 # Runtime dependency for Python
 Requires:       python3.12
@@ -28,8 +27,8 @@ and can directly edit code files based on the AI's suggestions.
 # Nothing to build
 
 %install
-# Install directly from PyPI using Python 3.12
-PYTHON=%{_bindir}/python3.12 pip3 install --no-deps --root %{buildroot} aider-chat==%{version}
+# Install directly from PyPI using explicit python3.12 module call
+python3.12 -m pip install --no-deps --root %{buildroot} aider-chat==%{version}
 
 %files
 %{python3_sitelib}/aider/
