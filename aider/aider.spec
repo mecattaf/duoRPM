@@ -24,6 +24,8 @@ BuildRequires:  gcc-gfortran
 BuildRequires:  make
 BuildRequires:  git-core
 BuildRequires:  pkgconfig
+BuildRequires:  openblas-devel
+BuildRequires:  python3-numpy-devel
 
 # Runtime dependency for Python
 Requires:       python3 >= 3.9
@@ -36,13 +38,17 @@ and can directly edit code files based on the AI's suggestions.
 
 %prep
 %autosetup -n %{name}-%{version}
-# Tell setuptools_scm to use the package version
 export SETUPTOOLS_SCM_PRETEND_VERSION=%{version}
+export SETUPTOOLS_SCM_FALLBACK_VERSION=%{version}
 
 %build
 # Configure pip to use multiple indexes and find compatible wheels
 export PIP_EXTRA_INDEX_URL="https://pypi.org/simple"
 export PIP_FIND_LINKS="https://download.pytorch.org/whl/cpu"
+
+# Configure numpy to use system OpenBLAS
+export NPY_NUM_BUILD_JOBS=$(nproc)
+export OPENBLAS=%{_libdir}
 
 # First install basic dependencies that don't need compilation
 pip3 install --upgrade pip wheel setuptools
