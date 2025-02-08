@@ -41,7 +41,7 @@ ln -s %{_exec_prefix}/lib/aider/venv/bin/aider %{buildroot}%{_bindir}/aider
 %files
 %dir %{_exec_prefix}/lib/aider
 %{_exec_prefix}/lib/aider/venv/
-%{_bindir}/aider
+%attr(755,root,root) %{_bindir}/aider
 
 %changelog
 %autochangelog
