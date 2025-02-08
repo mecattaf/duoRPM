@@ -36,6 +36,8 @@ and can directly edit code files based on the AI's suggestions.
 
 %prep
 %autosetup -n %{name}-%{version}
+# Tell setuptools_scm to use the package version
+export SETUPTOOLS_SCM_PRETEND_VERSION=%{version}
 
 %build
 # Configure pip to use multiple indexes and find compatible wheels
