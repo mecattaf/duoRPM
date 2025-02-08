@@ -27,23 +27,28 @@ and can directly edit code files based on the AI's suggestions.
 # Nothing to build
 
 %install
-# Create a venv directory in the package
+# Create the directory for aider under the Python library directory.
 mkdir -p %{buildroot}%{_libdir}/aider
+
+# Create a Python virtual environment for aider.
 python3.12 -m venv %{buildroot}%{_libdir}/aider/venv
 
-# Install aider in the venv
+# Install aider-chat into the virtual environment (without its dependencies).
 %{buildroot}%{_libdir}/aider/venv/bin/pip install --no-deps aider-chat==%{version}
 
-# Remove absolute buildroot paths from pyvenv.cfg to avoid check-buildroot errors
+# Remove buildroot references from the venv’s text files.
+# First, fix all the scripts in the venv's bin directory.
+find %{buildroot}%{_libdir}/aider/venv/bin -type f -exec sed -i "s|%{buildroot}||g" {} +
+# Then fix the venv configuration file.
 sed -i "s|%{buildroot}||g" %{buildroot}%{_libdir}/aider/venv/pyvenv.cfg
 
-# Create bindir and symlink the venv's aider binary
+# Create the binary directory and symlink the aider executable.
 mkdir -p %{buildroot}%{_bindir}
 ln -s %{_libdir}/aider/venv/bin/aider %{buildroot}%{_bindir}/aider
 
 %files
 %dir %{_libdir}/aider
-%{_libdir}/aider/venv/bin/aider
+%{_libdir}/aider/venv
 %attr(755,root,root) %{_bindir}/aider
 
 %changelog
