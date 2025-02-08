@@ -38,8 +38,8 @@ python3.12 -m pip install --no-deps --root %{buildroot} aider-chat==%{version}
 find %{buildroot} -type f -exec sed -i '1s=^#!.*python\s*$=#!%{__python3}=' {} +
 
 %files
-%{python3_sitelib}/aider/
-%{python3_sitelib}/aider_chat-*.dist-info/
+/usr/lib/python3.12/site-packages/aider/
+/usr/lib/python3.12/site-packages/aider_chat-*.dist-info/
 %{_bindir}/aider
 
 %changelog
