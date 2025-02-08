@@ -9,25 +9,16 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 
-# Build requirements from pyproject.toml and compilation tools
+# Build dependencies
 BuildRequires:  python3-devel >= 3.9
 BuildRequires:  python3-pip
-BuildRequires:  python3-setuptools >= 68
-BuildRequires:  python3-setuptools_scm >= 8
-BuildRequires:  python3-setuptools_scm+toml >= 8
 BuildRequires:  python3-wheel
-BuildRequires:  python3-build
-BuildRequires:  python3-installer
-BuildRequires:  gcc
-BuildRequires:  gcc-c++
-BuildRequires:  gcc-gfortran
-BuildRequires:  make
+BuildRequires:  pipx
 BuildRequires:  git-core
-BuildRequires:  pkgconfig
 
-# Runtime dependency for Python
+# Runtime dependencies
 Requires:       python3 >= 3.9
-# Upper bound handled by packager update policies
+Requires:       pipx
 
 %description
 Aider is a terminal-based coding assistant that lets you program with 
@@ -36,32 +27,28 @@ and can directly edit code files based on the AI's suggestions.
 
 %prep
 %autosetup -n %{name}-%{version}
-export SETUPTOOLS_SCM_PRETEND_VERSION=%{version}
-export SETUPTOOLS_SCM_FALLBACK_VERSION=%{version}
 
 %build
-# Configure pip to use multiple indexes and find compatible wheels
-export PIP_EXTRA_INDEX_URL="https://pypi.org/simple"
-export PIP_FIND_LINKS="https://download.pytorch.org/whl/cpu https://download.pytorch.org/whl"
-export PIP_ONLY_BINARY=numpy,scipy
-
-# First install basic dependencies that don't need compilation
-pip3 install --upgrade pip wheel setuptools
-# Then install aider's requirements
-PYTHONPATH="" pip3 install --no-deps --prefer-binary -r requirements.txt
-
-# Build using pyproject.toml
-python3 -m build --wheel --no-isolation
+# Nothing to build - using pipx for installation
 
 %install
-python3 -m installer --destdir=%{buildroot} dist/*.whl
+# Create directories for pipx
+export PIPX_HOME=%{buildroot}%{_prefix}/lib/pipx
+export PIPX_BIN_DIR=%{buildroot}%{_bindir}
+mkdir -p $PIPX_HOME $PIPX_BIN_DIR
+
+# Install aider using pipx
+pipx install . \
+    --python %{python3} \
+    --include-deps \
+    --verbose
 
 %files
 %license LICENSE
 %doc README.md
 %{_bindir}/aider
-%{python3_sitelib}/aider/
-%{python3_sitelib}/aider_chat-*.dist-info/
+%{_prefix}/lib/pipx/venvs/aider*
+%{_prefix}/lib/pipx/venvs/.local/pipx/venvs/aider*
 
 %changelog
 %autochangelog
