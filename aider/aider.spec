@@ -25,7 +25,7 @@ BuildRequires:  make
 BuildRequires:  git-core
 BuildRequires:  pkgconfig
 BuildRequires:  openblas-devel
-BuildRequires:  python3-numpy-devel
+BuildRequires:  python3-numpy
 
 # Runtime dependency for Python
 Requires:       python3 >= 3.9
