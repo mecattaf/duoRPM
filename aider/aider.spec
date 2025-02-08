@@ -1,5 +1,5 @@
 Name:           aider
-Version:        0.20.0
+Version:        0.74.0
 Release:        %autorelease
 Summary:        Command-line AI coding assistant
 
