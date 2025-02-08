@@ -6,14 +6,11 @@ Summary:        Command-line AI coding assistant
 License:        MIT
 URL:            https://github.com/paul-gauthier/aider
 
-BuildArch:      noarch
-
 BuildRequires:  python3.12
 BuildRequires:  python3-pip
 BuildRequires:  python3-wheel
-BuildRequires: chrpath
+BuildRequires:  chrpath
 
-# Runtime dependency for Python
 Requires:       python3.12
 
 %description
@@ -34,7 +31,7 @@ mkdir -p %{buildroot}%{_libdir}/aider
 # Create a Python virtual environment for aider.
 python3.12 -m venv %{buildroot}%{_libdir}/aider/venv
 
-# Install aider-chat into the virtual environment 
+# Install aider-chat into the virtual environment.
 %{buildroot}%{_libdir}/aider/venv/bin/pip install aider-chat==%{version}
 
 # Remove buildroot references from the venv’s text files.
@@ -44,17 +41,17 @@ sed -i "s|%{buildroot}||g" %{buildroot}%{_libdir}/aider/venv/pyvenv.cfg
 # Fix Python shebangs in all scripts inside the virtual environment.
 find %{buildroot}%{_libdir}/aider/venv -type f -exec sed -i 's|#!/usr/bin/env python$|#!/usr/bin/python3|' {} +
 
-# Remove invalid RPATHs from shared libraries**
+# Remove invalid RPATH entries from compiled modules.
 find %{buildroot}%{_libdir}/aider/venv -type f -name "*.so" -exec chrpath --delete {} \;
 
-# Create the binary directory and symlink the aider executable.
+# Create the binary directory and a relative symlink for the aider executable.
 mkdir -p %{buildroot}%{_bindir}
-ln -s %{_libdir}/aider/venv/bin/aider %{buildroot}%{_bindir}/aider
+ln -rs %{_libdir}/aider/venv/bin/aider %{buildroot}%{_bindir}/aider
 
 %files
 %dir %{_libdir}/aider
 %{_libdir}/aider/venv
-%attr(755,root,root) %{_bindir}/aider
+%{_bindir}/aider
 
 %changelog
 %autochangelog
