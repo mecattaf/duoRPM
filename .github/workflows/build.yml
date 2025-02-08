@@ -65,6 +65,7 @@ jobs:
         run: |
           copr-cli build-package mecattaf/zenRPM --nowait --name python-autotiling
           copr-cli build-package mecattaf/zenRPM --nowait --name nwg-clipman --after-build-id "$cliphist_build_id"
+          copr-cli build-package mecattaf/zenRPM --nowait --name aider
 
       # Build theme packages
       - name: Build theme packages
