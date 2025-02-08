@@ -9,11 +9,15 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 
-# Minimal build requirements
+# Build requirements including compilation tools
 BuildRequires:  python3-devel >= 3.12
 BuildRequires:  python3-pip
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-wheel
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
+BuildRequires:  make
+BuildRequires:  git-core
 
 # Runtime dependency just for Python 3.12
 Requires:       python3 >= 3.12
@@ -27,8 +31,8 @@ and can directly edit code files based on the AI's suggestions.
 %autosetup -n %{name}-%{version}
 
 %build
-# Install all dependencies from requirements.txt
-pip3 install --no-deps -r requirements.txt
+# Install all dependencies using pip with build isolation
+pip3 install --no-deps --ignore-installed -r requirements.txt
 %py3_build
 
 %install
