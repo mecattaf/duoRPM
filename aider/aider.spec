@@ -33,8 +33,8 @@ mkdir -p %{buildroot}%{_libdir}/aider
 # Create a Python virtual environment for aider.
 python3.12 -m venv %{buildroot}%{_libdir}/aider/venv
 
-# Install aider-chat into the virtual environment (without its dependencies).
-%{buildroot}%{_libdir}/aider/venv/bin/pip install --no-deps aider-chat==%{version}
+# Install aider-chat into the virtual environment 
+%{buildroot}%{_libdir}/aider/venv/bin/pip install aider-chat==%{version}
 
 # Remove buildroot references from the venv’s text files.
 find %{buildroot}%{_libdir}/aider/venv/bin -type f -exec sed -i "s|%{buildroot}||g" {} +
