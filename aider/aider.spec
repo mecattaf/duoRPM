@@ -24,8 +24,6 @@ BuildRequires:  gcc-gfortran
 BuildRequires:  make
 BuildRequires:  git-core
 BuildRequires:  pkgconfig
-BuildRequires:  openblas-devel
-BuildRequires:  python3-numpy
 
 # Runtime dependency for Python
 Requires:       python3 >= 3.9
@@ -44,18 +42,13 @@ export SETUPTOOLS_SCM_FALLBACK_VERSION=%{version}
 %build
 # Configure pip to use multiple indexes and find compatible wheels
 export PIP_EXTRA_INDEX_URL="https://pypi.org/simple"
-export PIP_FIND_LINKS="https://download.pytorch.org/whl/cpu"
-
-# Configure numpy to use system OpenBLAS
-export NPY_NUM_BUILD_JOBS=$(nproc)
-export OPENBLAS=%{_libdir}
+export PIP_FIND_LINKS="https://download.pytorch.org/whl/cpu https://download.pytorch.org/whl"
+export PIP_ONLY_BINARY=numpy,scipy
 
 # First install basic dependencies that don't need compilation
 pip3 install --upgrade pip wheel setuptools
 # Then install aider's requirements
-PYTHONPATH="" pip3 install --no-deps --no-cache-dir -r requirements.txt || true
-# Try to install any failed dependencies without version constraints
-pip3 install --no-deps openai anthropic tiktoken rich prompt-toolkit pygments diskcache gitpython configargparse
+PYTHONPATH="" pip3 install --no-deps --prefer-binary -r requirements.txt
 
 # Build using pyproject.toml
 python3 -m build --wheel --no-isolation
