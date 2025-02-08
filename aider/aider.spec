@@ -28,22 +28,19 @@ and can directly edit code files based on the AI's suggestions.
 
 %install
 # Create a venv directory in the package
-mkdir -p %{buildroot}/opt/aider
-python3.12 -m venv %{buildroot}/opt/aider/venv
+mkdir -p %{buildroot}%{_exec_prefix}/lib/aider
+python3.12 -m venv %{buildroot}%{_exec_prefix}/lib/aider/venv
 
-# Activate the venv and install aider
-%{buildroot}/opt/aider/venv/bin/pip install --no-deps aider-chat==%{version}
+# Install aider in the venv
+%{buildroot}%{_exec_prefix}/lib/aider/venv/bin/pip install --no-deps aider-chat==%{version}
 
-# Create a wrapper script in /usr/bin
+# Create bindir and symlink the venv's aider binary
 mkdir -p %{buildroot}%{_bindir}
-cat > %{buildroot}%{_bindir}/aider << 'EOF'
-#!/bin/sh
-exec /opt/aider/venv/bin/aider "$@"
-EOF
-chmod 755 %{buildroot}%{_bindir}/aider
+ln -s %{_exec_prefix}/lib/aider/venv/bin/aider %{buildroot}%{_bindir}/aider
 
 %files
-/opt/aider/
+%dir %{_exec_prefix}/lib/aider
+%{_exec_prefix}/lib/aider/venv/
 %{_bindir}/aider
 
 %changelog
