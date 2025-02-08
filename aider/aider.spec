@@ -9,10 +9,13 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 
-# Build requirements including compilation tools
-BuildRequires:  python3-devel >= 3.12
+# Build requirements from pyproject.toml and compilation tools
+BuildRequires:  python3-devel >= 3.9
+BuildRequires:  python3-devel < 3.13
 BuildRequires:  python3-pip
-BuildRequires:  python3-setuptools
+BuildRequires:  python3-setuptools >= 68
+BuildRequires:  python3-setuptools_scm >= 8
+BuildRequires:  python3-setuptools_scm+toml >= 8
 BuildRequires:  python3-wheel
 BuildRequires:  python3-build
 BuildRequires:  python3-installer
@@ -23,8 +26,9 @@ BuildRequires:  make
 BuildRequires:  git-core
 BuildRequires:  pkgconfig
 
-# Runtime dependency just for Python 3.12
-Requires:       python3 >= 3.12
+# Runtime dependency for Python
+Requires:       python3 >= 3.9
+Requires:       python3 < 3.13
 
 %description
 Aider is a terminal-based coding assistant that lets you program with 
