@@ -34,6 +34,9 @@ python3.12 -m pip install --upgrade pip
 # Install directly from PyPI
 python3.12 -m pip install --no-deps --root %{buildroot} aider-chat==%{version}
 
+# Fix shebangs
+find %{buildroot} -type f -exec sed -i '1s=^#!.*python\s*$=#!%{__python3}=' {} +
+
 %files
 %{python3_sitelib}/aider/
 %{python3_sitelib}/aider_chat-*.dist-info/
