@@ -37,10 +37,11 @@ python3.12 -m venv %{buildroot}%{_libdir}/aider/venv
 %{buildroot}%{_libdir}/aider/venv/bin/pip install --no-deps aider-chat==%{version}
 
 # Remove buildroot references from the venv’s text files.
-# First, fix all the scripts in the venv's bin directory.
 find %{buildroot}%{_libdir}/aider/venv/bin -type f -exec sed -i "s|%{buildroot}||g" {} +
-# Then fix the venv configuration file.
 sed -i "s|%{buildroot}||g" %{buildroot}%{_libdir}/aider/venv/pyvenv.cfg
+
+# Fix Python shebangs in all scripts inside the virtual environment.
+find %{buildroot}%{_libdir}/aider/venv -type f -exec sed -i 's|#!/usr/bin/env python$|#!/usr/bin/python3|' {} +
 
 # Create the binary directory and symlink the aider executable.
 mkdir -p %{buildroot}%{_bindir}
