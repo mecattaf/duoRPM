@@ -5,7 +5,6 @@ Summary:        Command-line AI coding assistant
 
 License:        MIT
 URL:            https://github.com/paul-gauthier/aider
-Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 
@@ -22,18 +21,16 @@ LLM models like GPT-4 or Claude. It helps maintain conversation context
 and can directly edit code files based on the AI's suggestions.
 
 %prep
-%autosetup -n %{name}-%{version}
+# Nothing to prep
 
 %build
 # Nothing to build
 
 %install
-# Install directly with pip into the correct location
-pip3 install --no-deps --root %{buildroot} .
+# Install directly from PyPI
+pip3 install --no-deps --root %{buildroot} aider-chat==%{version}
 
 %files
-%license LICENSE
-%doc README.md
 %{python3_sitelib}/aider/
 %{python3_sitelib}/aider_chat-*.dist-info/
 %{_bindir}/aider
