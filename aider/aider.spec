@@ -11,6 +11,7 @@ BuildArch:      noarch
 BuildRequires:  python3.12
 BuildRequires:  python3-pip
 BuildRequires:  python3-wheel
+BuildRequires: chrpath
 
 # Runtime dependency for Python
 Requires:       python3.12
@@ -42,6 +43,9 @@ sed -i "s|%{buildroot}||g" %{buildroot}%{_libdir}/aider/venv/pyvenv.cfg
 
 # Fix Python shebangs in all scripts inside the virtual environment.
 find %{buildroot}%{_libdir}/aider/venv -type f -exec sed -i 's|#!/usr/bin/env python$|#!/usr/bin/python3|' {} +
+
+# Remove invalid RPATHs from shared libraries**
+find %{buildroot}%{_libdir}/aider/venv -type f -name "*.so" -exec chrpath --delete {} \;
 
 # Create the binary directory and symlink the aider executable.
 mkdir -p %{buildroot}%{_bindir}
