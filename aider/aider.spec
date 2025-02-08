@@ -27,19 +27,23 @@ and can directly edit code files based on the AI's suggestions.
 # Nothing to build
 
 %install
-# Ensure pip is available for Python 3.12
-python3.12 -m ensurepip
-python3.12 -m pip install --upgrade pip
+# Create a venv directory in the package
+mkdir -p %{buildroot}/opt/aider
+python3.12 -m venv %{buildroot}/opt/aider/venv
 
-# Install directly from PyPI
-python3.12 -m pip install --no-deps --root %{buildroot} aider-chat==%{version}
+# Activate the venv and install aider
+%{buildroot}/opt/aider/venv/bin/pip install --no-deps aider-chat==%{version}
 
-# Fix shebangs
-find %{buildroot} -type f -exec sed -i '1s=^#!.*python\s*$=#!%{__python3}=' {} +
+# Create a wrapper script in /usr/bin
+mkdir -p %{buildroot}%{_bindir}
+cat > %{buildroot}%{_bindir}/aider << 'EOF'
+#!/bin/sh
+exec /opt/aider/venv/bin/aider "$@"
+EOF
+chmod 755 %{buildroot}%{_bindir}/aider
 
 %files
-/usr/lib/python3.12/site-packages/aider/
-/usr/lib/python3.12/site-packages/aider_chat-*.dist-info/
+/opt/aider/
 %{_bindir}/aider
 
 %changelog
