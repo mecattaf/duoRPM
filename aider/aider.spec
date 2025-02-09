@@ -1,7 +1,7 @@
 Name:           aider
 Version:        0.74.0
 Release:        2%{?dist}
-Summary:        Command-line AI coding assistant
+Summary:        Command-line AI coding assistant tool
 
 License:        MIT
 URL:            https://github.com/paul-gauthier/aider
