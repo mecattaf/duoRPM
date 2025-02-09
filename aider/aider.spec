@@ -1,6 +1,6 @@
 Name:           aider
 Version:        0.74.0
-Release:        %autorelease
+Release:        2%{?dist}
 Summary:        Command-line AI coding assistant
 
 License:        MIT
