@@ -36,12 +36,10 @@ Requires:       gtk-layer-shell
 Requires:       cairo
 Requires:       gobject-introspection
 Requires:       libdbusmenu-gtk3
-# Changed webkit2gtk4.1 to the correct Fedora package name
 Requires:       webkit2gtk4.0
 
 # Optional dependencies
 Recommends:     python3-psutil
-# gnome-bluetooth3 package isn't available on Fedora, use gnome-bluetooth instead
 Recommends:     gnome-bluetooth
 
 %description
@@ -66,17 +64,16 @@ cd %{pypi_name}
 %install
 cd %{pypi_name}
 %py3_install
-# Remove bundled egg-info if it exists
-rm -rf %{buildroot}%{python3_sitelib}/fabric-*.egg-info
 
 %files
 %license %{pypi_name}/LICENSE
 %doc %{pypi_name}/README.md
 %{python3_sitelib}/fabric/
-%{python3_sitelib}/fabric-*.egg-info/
+%{python3_sitelib}/fabric-*.dist-info/
 
 %changelog
 * Tue Mar 18 2025 Automated Package Build <builder@copr.fedoraproject.org> - 0.0.2-1
-- Fix package dependencies to match available Fedora 41 packages
+- Fix egg-info directory reference in files section
+- Fix package dependencies to match available Fedora packages
 - Switch to git source to match PKGBUILD approach
 - Initial package for Fedora COPR
