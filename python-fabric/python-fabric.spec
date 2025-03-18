@@ -24,7 +24,8 @@ BuildRequires:  gtk-layer-shell-devel
 BuildRequires:  cairo-devel
 BuildRequires:  libdbusmenu-gtk3-devel
 BuildRequires:  pkgconfig
-BuildRequires:  python3-pygobject3-devel
+# Updated: python3-pygobject3-devel is replaced with python3-gobject-devel in Fedora
+BuildRequires:  python3-gobject-devel
 
 Requires:       python3-gobject
 Requires:       python3-cairo
@@ -35,11 +36,13 @@ Requires:       gtk-layer-shell
 Requires:       cairo
 Requires:       gobject-introspection
 Requires:       libdbusmenu-gtk3
-Requires:       webkit2gtk4.1
+# Changed webkit2gtk4.1 to the correct Fedora package name
+Requires:       webkit2gtk4.0
 
 # Optional dependencies
 Recommends:     python3-psutil
-Recommends:     gnome-bluetooth3
+# gnome-bluetooth3 package isn't available on Fedora, use gnome-bluetooth instead
+Recommends:     gnome-bluetooth
 
 %description
 Fabric is a Desktop Widgets System that can be customized using Python. It offers
@@ -74,5 +77,6 @@ rm -rf %{buildroot}%{python3_sitelib}/fabric-*.egg-info
 
 %changelog
 * Tue Mar 18 2025 Automated Package Build <builder@copr.fedoraproject.org> - 0.0.2-1
+- Fix package dependencies to match available Fedora 41 packages
 - Switch to git source to match PKGBUILD approach
 - Initial package for Fedora COPR
