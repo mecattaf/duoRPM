@@ -11,7 +11,7 @@ Summary:        Next-Gen framework for building desktop widgets using Python
 
 License:        AGPL-3.0-or-later
 URL:            %{forgeurl}
-Source0:        %{forgeurl}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{forgeurl}/archive/%{commit}/%{pypi_name}-%{commit}.tar.gz
 
 BuildArch:      noarch
 
