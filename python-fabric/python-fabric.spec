@@ -1,14 +1,17 @@
 %global pypi_name fabric
 %global forgeurl https://github.com/Fabric-Development/fabric
-Version:        0.0.2
+# Using commit for main branch since there are no proper release tags
+%global commit 67e6c1f5daf60fc28be329f9a40d9e07e0cfb8e3
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           python-%{pypi_name}
+Version:        0.0.2
 Release:        1%{?dist}
 Summary:        Next-Gen framework for building desktop widgets using Python
 
 License:        AGPL-3.0-or-later
 URL:            %{forgeurl}
-Source0:        %{forgeurl}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{forgeurl}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 
 BuildArch:      noarch
 
@@ -47,7 +50,7 @@ a high-level, signal-based workflow pattern that eliminates the need for polling
 or bash scripting for basic tasks.
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -n %{pypi_name}-%{commit}
 # Ensure that we don't try to regenerate docs during the build process
 if [ -f docs/Makefile ]; then
     touch docs/Makefile

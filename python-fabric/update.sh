@@ -5,50 +5,36 @@ set -euo pipefail
 
 SPEC="python-fabric.spec"
 REPO="Fabric-Development/fabric"
+COMMIT_FIELD="%global commit"
 VERSION_FIELD="Version:"
 
-# Check both release tag and pyproject.toml for the latest version
-GITHUB_LATEST=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" 2>/dev/null | jq -r .tag_name 2>/dev/null | sed 's/^v//' || echo "")
-if [ -z "$GITHUB_LATEST" ]; then
-    # If no releases, check pyproject.toml from main branch
-    GITHUB_LATEST=$(curl -s "https://raw.githubusercontent.com/$REPO/main/pyproject.toml" | grep "version" | head -1 | cut -d'"' -f2 || echo "")
-fi
+# Get the latest commit from the main branch
+LATEST_COMMIT=$(curl -s "https://api.github.com/repos/$REPO/commits/main" | jq -r .sha)
+CURRENT_COMMIT=$(grep -E "^%global commit" "$SPEC" | awk '{print $3}')
 
-# Fallback to checking the Python package index
-if [ -z "$GITHUB_LATEST" ]; then
-    GITHUB_LATEST=$(curl -s "https://pypi.org/pypi/fabric/json" 2>/dev/null | jq -r .info.version 2>/dev/null || echo "")
-fi
+# Check pyproject.toml from main branch for latest version
+LATEST_VERSION=$(curl -s "https://raw.githubusercontent.com/$REPO/main/pyproject.toml" | grep "version" | head -1 | cut -d'"' -f2 || echo "")
+CURRENT_VERSION=$(rpmspec -q --qf "%{version}\n" "$SPEC" | head -1)
 
-# If we still don't have a version, exit
-if [ -z "$GITHUB_LATEST" ]; then
-    echo "Could not determine latest version. Exiting."
-    exit 0
-fi
-
-CURRENT=$(rpmspec -q --qf "%{version}\n" "$SPEC" | head -1)
-
-if [ "$GITHUB_LATEST" != "$CURRENT" ]; then
-    # Verify that the source is available
-    SOURCE_URL="https://github.com/${REPO}/archive/v${GITHUB_LATEST}/${GITHUB_LATEST}.tar.gz"
+# Check if either commit or version has changed
+if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ] || [ "$LATEST_VERSION" != "$CURRENT_VERSION" -a -n "$LATEST_VERSION" ]; then
+    # Update commit in spec file
+    sed -i "s/^${COMMIT_FIELD}.*/${COMMIT_FIELD} ${LATEST_COMMIT}/" "$SPEC"
     
-    # Check if source file exists or if we can use a different format
-    if ! curl --output /dev/null --silent --head --fail "$SOURCE_URL"; then
-        SOURCE_URL="https://github.com/${REPO}/archive/${GITHUB_LATEST}/${GITHUB_LATEST}.tar.gz"
-        if ! curl --output /dev/null --silent --head --fail "$SOURCE_URL"; then
-            echo "Warning: Source file for version ${GITHUB_LATEST} not available yet"
-            exit 0
-        fi
+    # Update version if available
+    if [ -n "$LATEST_VERSION" -a "$LATEST_VERSION" != "$CURRENT_VERSION" ]; then
+        sed -i "s/^${VERSION_FIELD}.*/${VERSION_FIELD}        ${LATEST_VERSION}/" "$SPEC"
     fi
     
-    # Update version in spec file
-    sed -i "s/^${VERSION_FIELD}.*/${VERSION_FIELD}        ${GITHUB_LATEST}/" "$SPEC"
+    # Calculate short commit for the commit message
+    SHORT_COMMIT="${LATEST_COMMIT:0:7}"
     
     # Update changelog
     TODAY=$(date "+%a %b %d %Y")
-    sed -i "/^%changelog/a* ${TODAY} Automated Package Build <builder@copr.fedoraproject.org> - ${GITHUB_LATEST}-1\n- Update to version ${GITHUB_LATEST}\n" "$SPEC"
+    sed -i "/^%changelog/a* ${TODAY} Automated Package Build <builder@copr.fedoraproject.org> - ${LATEST_VERSION:-$CURRENT_VERSION}-1\n- Update to commit ${SHORT_COMMIT}\n" "$SPEC"
     
     # Commit and push changes with build tag
     git add "$SPEC"
-    git commit -m "Update python-fabric to ${GITHUB_LATEST} [build-python]"
+    git commit -m "Update python-fabric to ${LATEST_VERSION:-$CURRENT_VERSION} (commit ${SHORT_COMMIT}) [build-python]"
     git push
 fi
