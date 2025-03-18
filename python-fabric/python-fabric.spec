@@ -24,7 +24,6 @@ BuildRequires:  gtk-layer-shell-devel
 BuildRequires:  cairo-devel
 BuildRequires:  libdbusmenu-gtk3-devel
 BuildRequires:  pkgconfig
-# Updated: python3-pygobject3-devel is replaced with python3-gobject-devel in Fedora
 BuildRequires:  python3-gobject-devel
 
 Requires:       python3-gobject
@@ -52,28 +51,21 @@ or bash scripting for basic tasks.
 %prep
 # Use git clone like in PKGBUILD
 %setup -q -T -c
-git clone %{url} %{pypi_name}
-cd %{pypi_name}
+git clone %{url} .
 # Optional: checkout a specific tag if needed
 # git checkout v%{version}
 
 %build
-cd %{pypi_name}
 %py3_build
 
 %install
-cd %{pypi_name}
 %py3_install
+# List the files for debugging
+find %{buildroot} -type f -o -type l | sort
 
 %files
-%license %{pypi_name}/LICENSE
-%doc %{pypi_name}/README.md
+%license LICENSE
+%doc README.md
 %{python3_sitelib}/fabric/
-%{python3_sitelib}/fabric-*.dist-info/
-
-%changelog
-* Tue Mar 18 2025 Automated Package Build <builder@copr.fedoraproject.org> - 0.0.2-1
-- Fix egg-info directory reference in files section
-- Fix package dependencies to match available Fedora packages
-- Switch to git source to match PKGBUILD approach
-- Initial package for Fedora COPR
+# Use a wildcard pattern that will match either egg-info or dist-info
+%{python3_sitelib}/fabric-*
