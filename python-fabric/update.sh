@@ -12,14 +12,24 @@ VERSION_FIELD="Version:"
 LATEST_COMMIT=$(curl -s "https://api.github.com/repos/$REPO/commits/main" | jq -r .sha)
 CURRENT_COMMIT=$(grep -E "^%global commit" "$SPEC" | awk '{print $3}')
 
+# Check if the commit actually exists by attempting to access it
+COMMIT_CHECK=$(curl -s -o /dev/null -w "%{http_code}" "https://github.com/${REPO}/archive/${LATEST_COMMIT}.tar.gz")
+if [ "$COMMIT_CHECK" != "200" ]; then
+    echo "Warning: Latest commit ${LATEST_COMMIT} is not available for download. Keeping current commit."
+    exit 0
+fi
+
 # Check pyproject.toml from main branch for latest version
 LATEST_VERSION=$(curl -s "https://raw.githubusercontent.com/$REPO/main/pyproject.toml" | grep "version" | head -1 | cut -d'"' -f2 || echo "")
 CURRENT_VERSION=$(rpmspec -q --qf "%{version}\n" "$SPEC" | head -1)
 
+# Calculate short commit for the commit message and source
+SHORT_COMMIT="${LATEST_COMMIT:0:7}"
+
 # Check if either commit or version has changed
 if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ] || [ "$LATEST_VERSION" != "$CURRENT_VERSION" -a -n "$LATEST_VERSION" ]; then
     # Verify that the source is available
-    SOURCE_URL="https://github.com/${REPO}/archive/${LATEST_COMMIT}.tar.gz"
+    SOURCE_URL="https://github.com/${REPO}/archive/${LATEST_COMMIT}/${REPO##*/}-${SHORT_COMMIT}.tar.gz"
     
     # Check if source file exists
     if curl --output /dev/null --silent --head --fail "$SOURCE_URL"; then
@@ -30,9 +40,6 @@ if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ] || [ "$LATEST_VERSION" != "$CURRENT
         if [ -n "$LATEST_VERSION" -a "$LATEST_VERSION" != "$CURRENT_VERSION" ]; then
             sed -i "s/^${VERSION_FIELD}.*/${VERSION_FIELD}        ${LATEST_VERSION}/" "$SPEC"
         fi
-        
-        # Calculate short commit for the commit message
-        SHORT_COMMIT="${LATEST_COMMIT:0:7}"
         
         # Update changelog
         TODAY=$(date "+%a %b %d %Y")

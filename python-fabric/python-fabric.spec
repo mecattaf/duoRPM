@@ -1,7 +1,7 @@
 %global pypi_name fabric
 %global forgeurl https://github.com/Fabric-Development/fabric
-# Using commit for main branch since there are no proper release tags
-%global commit 67e6c1f5daf60fc28be329f9a40d9e07e0cfb8e3
+# Use a known-good commit
+%global commit b681065d0919f7eb5309a93cea2cfa84dec9aa88
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           python-%{pypi_name}
@@ -11,7 +11,7 @@ Summary:        Next-Gen framework for building desktop widgets using Python
 
 License:        AGPL-3.0-or-later
 URL:            %{forgeurl}
-Source0:        %{forgeurl}/archive/%{commit}/%{pypi_name}-%{commit}.tar.gz
+Source0:        %{forgeurl}/archive/%{commit}/%{pypi_name}-%{shortcommit}.tar.gz
 
 BuildArch:      noarch
 
@@ -72,4 +72,5 @@ rm -rf %{buildroot}%{python3_sitelib}/fabric-*.egg-info
 
 %changelog
 * Tue Mar 18 2025 Automated Package Build <builder@copr.fedoraproject.org> - 0.0.2-1
+- Update to use a valid commit hash
 - Initial package for Fedora COPR
