@@ -128,6 +128,7 @@ git push
 ```
 
 The `[build-all]` tag in the commit message triggers the initial build of all packages. 
+! Document other tags
 
 ## Monitoring Your Setup
 
