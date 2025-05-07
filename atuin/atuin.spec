@@ -7,9 +7,9 @@ Summary:        Magical shell history
 
 License:        MIT
 URL:            https://github.com/atuinsh/atuin
-Source0:        %{url}/releases/download/v%{version}/%{name}-x86_64-unknown-linux-musl.tar.gz
-Source1:        https://raw.githubusercontent.com/atuinsh/atuin/v%{version}/README.md
-Source2:        https://raw.githubusercontent.com/atuinsh/atuin/v%{version}/LICENSE
+Source0:        %{url}/releases/download/%{version}/%{name}-x86_64-unknown-linux-gnu.tar.gz
+Source1:        https://raw.githubusercontent.com/atuinsh/atuin/%{version}/README.md
+Source2:        https://raw.githubusercontent.com/atuinsh/atuin/%{version}/LICENSE
 
 BuildArch:      x86_64
 Requires:       glibc

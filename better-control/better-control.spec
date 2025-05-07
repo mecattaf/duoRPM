@@ -87,9 +87,13 @@ chmod 755 %{buildroot}%{_bindir}/%{name}
 # Create control symlink
 ln -sf %{name} %{buildroot}%{_bindir}/control
 
-# Install desktop file
-sed 's|Exec=/usr/bin/control|Exec=/usr/bin/better-control|' \
-    src/control.desktop > %{buildroot}%{_datadir}/applications/%{name}.desktop
+# Install desktop file with fixed categories
+# First copy the original desktop file
+cp src/control.desktop %{buildroot}%{_datadir}/applications/%{name}.desktop
+
+# Then fix both the Exec path and Categories to conform to standards
+sed -i 's|Exec=/usr/bin/control|Exec=/usr/bin/better-control|' %{buildroot}%{_datadir}/applications/%{name}.desktop
+sed -i 's|Categories=System;Control;Settings;|Categories=System;Settings;|' %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 # Verify desktop file
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
