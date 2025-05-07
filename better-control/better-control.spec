@@ -104,4 +104,5 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_datadir}/applications/%{name}.desktop
 
 %changelog
+* Thu May 08 2025 Package Maintainer <maintainer@example.com> - 6.11.4-1
 - Initial package for Fedora COPR repository

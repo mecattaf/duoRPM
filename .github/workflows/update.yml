@@ -18,7 +18,7 @@ jobs:
         run: |
           microdnf -y install --nodocs --setopt=install_weak_deps=0 \
             git-core rpm-build curl perl-interpreter jq rpmdevtools copr-cli parallel tar gzip \
-            python3-pip golang cargo  # Added for version checking
+            python3-pip golang cargo find
 
       - name: Copr config
         env:
@@ -29,9 +29,16 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Run updater
+      - name: Configure Git
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          find -name "update.sh" -execdir {} \;
+
+      # Run update scripts in subdirectories
+      - name: Run update scripts
+        run: |
+          # First verify all update scripts are executable
+          find . -name "update.sh" -exec chmod +x {} \;
+          # Then run each update script
+          find . -name "update.sh" -execdir {} \;

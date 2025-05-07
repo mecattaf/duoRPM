@@ -54,5 +54,5 @@ and i3 window managers.
 %{python3_sitelib}/%{pypi_name}-%{pypi_version}-py%{python3_version}.egg-info
 
 %changelog
-* Mon Nov 11 2024 mockbuilder - 1.9.3-1
+* Thu May 08 2025 Package Maintainer <maintainer@example.com> - 1.9.3-1
 - Initial package.

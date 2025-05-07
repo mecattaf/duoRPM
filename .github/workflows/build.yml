@@ -27,7 +27,7 @@ jobs:
       - name: Prepare
         run: |
           microdnf -y install --nodocs --setopt=install_weak_deps=0 \
-            copr-cli parallel tar gzip
+            copr-cli parallel tar gzip git
 
       - name: Copr config
         env:
@@ -38,21 +38,32 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      # Prevent race conditions by starting with xcur2png
+      - name: Build xcur2png first (dependency)
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-go]')
+        run: |
+          xcur2png_build_id=$(copr-cli build-package mecattaf/zenRPM --nowait --name xcur2png | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
+          echo "XCUR2PNG_BUILD_ID=$xcur2png_build_id" >> $GITHUB_ENV
+
+      # Build cliphist second (dependency for nwg-clipman)
+      - name: Build cliphist (dependency)
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-go]')
+        run: |
+          cliphist_build_id=$(copr-cli build-package mecattaf/zenRPM --nowait --name cliphist | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
+          echo "CLIPHIST_BUILD_ID=$cliphist_build_id" >> $GITHUB_ENV
+
       # Build GCC packages (lisgd)
       - name: Build GCC packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-gcc]')
         run: |
           copr-cli build-package mecattaf/zenRPM --nowait --name lisgd
 
-      # Build Go packages (cliphist and nwg-look)
+      # Build remaining Go packages (nwg-look) that depend on xcur2png
       - name: Build Go packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-go]')
         run: |
-          # Build xcur2png and cliphist first as they're dependencies
-          xcur2png_build_id=$(copr-cli build-package mecattaf/zenRPM --nowait --name xcur2png | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
-          cliphist_build_id=$(copr-cli build-package mecattaf/zenRPM --nowait --name cliphist | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
-          # Build nwg-look after its dependencies
-          copr-cli build-package mecattaf/zenRPM --nowait --name nwg-look --after-build-id "$xcur2png_build_id"
+          # Build nwg-look after xcur2png
+          copr-cli build-package mecattaf/zenRPM --nowait --name nwg-look --after-build-id "$XCUR2PNG_BUILD_ID"
 
       # Build Rust package
       - name: Build Rust package
@@ -60,12 +71,12 @@ jobs:
         run: |
           copr-cli build-package mecattaf/zenRPM --nowait --name wl-gammarelay-rs
 
-      # Build Python packages
+      # Build Python packages with dependencies
       - name: Build Python packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-python]')
         run: |
           copr-cli build-package mecattaf/zenRPM --nowait --name python-autotiling
-          copr-cli build-package mecattaf/zenRPM --nowait --name nwg-clipman --after-build-id "$cliphist_build_id"
+          copr-cli build-package mecattaf/zenRPM --nowait --name nwg-clipman --after-build-id "$CLIPHIST_BUILD_ID"
           copr-cli build-package mecattaf/zenRPM --nowait --name better-control
 
       # Build theme packages
@@ -79,12 +90,14 @@ jobs:
       - name: Build prebuilt packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-prebuilt]')
         run: |
-          parallel copr-cli build-package mecattaf/zenRPM --nowait --name ::: \
-            atuin eza starship
+          # Build each prebuilt package independently since they tend to have specific issues
+          copr-cli build-package mecattaf/zenRPM --nowait --name atuin
+          copr-cli build-package mecattaf/zenRPM --nowait --name eza
+          copr-cli build-package mecattaf/zenRPM --nowait --name starship
 
       # Check build status (fixed version)
       - name: Check build status
         if: always()
         run: |
-          sleep 30  # Give COPR time to register all builds
+          sleep 60  # Give COPR more time to register all builds
           copr-cli list-builds mecattaf/zenRPM

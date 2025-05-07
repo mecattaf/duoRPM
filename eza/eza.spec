@@ -24,15 +24,17 @@ eza is a modern, maintained replacement for the ls command.
 
 %prep
 %autosetup -c
-# Extract additional tarballs manually
-tar -xf %{SOURCE1}
-tar -xf %{SOURCE2}
+# Extract additional tarballs manually to specific directories
+mkdir -p completions-%{version}
+mkdir -p man-%{version}
+tar -xf %{SOURCE1} -C completions-%{version}
+tar -xf %{SOURCE2} -C man-%{version}
 cp %{SOURCE3} .
 
 %build
-# Compress man pages
-gzip -9 man-%{version}/*.1
-gzip -9 man-%{version}/*.5
+# Find and compress man pages properly
+find man-%{version} -name "*.1" -exec gzip -9 {} \;
+find man-%{version} -name "*.5" -exec gzip -9 {} \;
 
 %install
 # Install binary
@@ -43,10 +45,18 @@ install -Dpm644 completions-%{version}/%{name} %{buildroot}%{_datadir}/bash-comp
 install -Dpm644 completions-%{version}/%{name}.fish %{buildroot}%{_datadir}/fish/vendor_completions.d/%{name}.fish
 install -Dpm644 completions-%{version}/_%{name} %{buildroot}%{_datadir}/zsh/site-functions/_%{name}
 
-# Install man pages
-install -Dpm644 man-%{version}/%{name}.1.gz %{buildroot}%{_mandir}/man1/%{name}.1.gz
-install -Dpm644 man-%{version}/%{name}_colors.5.gz %{buildroot}%{_mandir}/man5/%{name}_colors.5.gz
-install -Dpm644 man-%{version}/%{name}_colors-explanation.5.gz %{buildroot}%{_mandir}/man5/%{name}_colors-explanation.5.gz
+# Install man pages - using find to locate them regardless of directory structure
+for manpage in $(find man-%{version} -name "%{name}.1.gz"); do
+    install -Dpm644 "$manpage" %{buildroot}%{_mandir}/man1/%{name}.1.gz
+done
+
+for manpage in $(find man-%{version} -name "%{name}_colors.5.gz"); do
+    install -Dpm644 "$manpage" %{buildroot}%{_mandir}/man5/%{name}_colors.5.gz
+done
+
+for manpage in $(find man-%{version} -name "%{name}_colors-explanation.5.gz"); do
+    install -Dpm644 "$manpage" %{buildroot}%{_mandir}/man5/%{name}_colors-explanation.5.gz
+done
 
 # Create ls symlink
 ln -sf %{name} %{buildroot}%{_bindir}/exa
@@ -63,4 +73,6 @@ ln -sf %{name} %{buildroot}%{_bindir}/exa
 %{_mandir}/man5/%{name}_colors-explanation.5.gz
 
 %changelog
+* Thu May 08 2025 Package Maintainer <maintainer@example.com> - 0.21.3-1
+- Update to version 0.21.3
 %autochangelog

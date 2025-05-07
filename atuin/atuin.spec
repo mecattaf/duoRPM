@@ -14,6 +14,9 @@ Source2:        https://raw.githubusercontent.com/atuinsh/atuin/v%{version}/LICE
 BuildArch:      x86_64
 Requires:       glibc
 
+%global         _missing_build_ids_terminate_build 0
+ExclusiveArch:  x86_64
+
 %description
 Atuin replaces your existing shell history with a SQLite database, and records additional context for your commands.
 Additionally, it provides optional and fully encrypted synchronization of your history between machines, via an Atuin server.
@@ -48,4 +51,6 @@ mkdir -p %{buildroot}%{_datadir}/zsh/site-functions
 %{_datadir}/zsh/site-functions/_%{name}
 
 %changelog
+* Thu May 08 2025 Package Maintainer <maintainer@example.com> - 18.6.0-1
+- Update to version 18.6.0
 %autochangelog
