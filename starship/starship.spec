@@ -10,7 +10,8 @@ URL:            https://github.com/starship/starship
 Source0:        %{url}/releases/download/v%{version}/%{name}-x86_64-unknown-linux-gnu.tar.gz
 Source1:        https://raw.githubusercontent.com/starship/starship/v%{version}/docs/config/README.md
 
-BuildArch:      x86_64
+# This is a prebuilt binary package, only available for x86_64
+ExclusiveArch:  x86_64
 
 %description
 The minimal, blazing-fast, and infinitely customizable prompt for any shell!
@@ -23,7 +24,7 @@ The minimal, blazing-fast, and infinitely customizable prompt for any shell!
 - Easy: quick to install – start using it in minutes.
 
 %prep
-%autosetup -c
+%setup -q -c
 # Get the configuration README
 cp %{SOURCE1} CONFIGURATION.md
 

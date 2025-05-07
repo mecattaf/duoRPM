@@ -12,7 +12,8 @@ Source1:        %{url}/releases/download/v%{version}/completions-%{version}.tar.
 Source2:        %{url}/releases/download/v%{version}/man-%{version}.tar.gz
 Source3:        https://raw.githubusercontent.com/eza-community/eza/v%{version}/LICENSE.txt
 
-BuildArch:      x86_64
+# This is a prebuilt binary package, only available for x86_64
+ExclusiveArch:  x86_64
 BuildRequires:  gzip
 
 %description
@@ -23,16 +24,13 @@ eza is a modern, maintained replacement for the ls command.
 - It's written in Rust, so it's small, fast, and portable.
 
 %prep
-%autosetup -c
+%setup -q -c
 # Extract additional tarballs manually to specific directories
 mkdir -p completions
 mkdir -p man
 tar -xf %{SOURCE1} -C completions
 tar -xf %{SOURCE2} -C man
 cp %{SOURCE3} .
-
-# Debug: list completions directory content
-ls -la completions/
 
 %build
 # Find and compress man pages properly

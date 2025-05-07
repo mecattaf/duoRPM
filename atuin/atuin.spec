@@ -11,20 +11,20 @@ Source0:        %{url}/releases/download/%{version}/%{name}-x86_64-unknown-linux
 Source1:        https://raw.githubusercontent.com/atuinsh/atuin/%{version}/README.md
 Source2:        https://raw.githubusercontent.com/atuinsh/atuin/%{version}/LICENSE
 
-BuildArch:      x86_64
+# This is a prebuilt binary package, only available for x86_64
+ExclusiveArch:  x86_64
 Requires:       glibc
 
 %global         _missing_build_ids_terminate_build 0
-ExclusiveArch:  x86_64
 
 %description
 Atuin replaces your existing shell history with a SQLite database, and records additional context for your commands.
 Additionally, it provides optional and fully encrypted synchronization of your history between machines, via an Atuin server.
 
 %prep
-%autosetup -c
-cp %{SOURCE1} .
-cp %{SOURCE2} .
+%setup -q -c
+cp %{SOURCE1} ./README.md
+cp %{SOURCE2} ./LICENSE
 
 %build
 # Binary release, nothing to build
