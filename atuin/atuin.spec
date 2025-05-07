@@ -26,12 +26,42 @@ Additionally, it provides optional and fully encrypted synchronization of your h
 cp %{SOURCE1} ./README.md
 cp %{SOURCE2} ./LICENSE
 
+# Debug: list files to examine tarball structure
+ls -la
+if [ -d %{name}-x86_64-unknown-linux-gnu ]; then
+    ls -la %{name}-x86_64-unknown-linux-gnu
+fi
+if [ -d bin ]; then
+    ls -la bin
+fi
+
 %build
 # Binary release, nothing to build
 
 %install
-# Install binary
-install -Dpm755 %{name} %{buildroot}%{_bindir}/%{name}
+# Find and install the binary, handling different possible locations
+if [ -f ./%{name} ]; then
+    # Binary at root level
+    install -Dpm755 ./%{name} %{buildroot}%{_bindir}/%{name}
+elif [ -f ./bin/%{name} ]; then
+    # Binary in bin directory
+    install -Dpm755 ./bin/%{name} %{buildroot}%{_bindir}/%{name}
+elif [ -f ./%{name}-x86_64-unknown-linux-gnu/%{name} ]; then
+    # Binary in architecture-specific directory
+    install -Dpm755 ./%{name}-x86_64-unknown-linux-gnu/%{name} %{buildroot}%{_bindir}/%{name}
+elif [ -f ./%{name}-x86_64-unknown-linux-gnu/bin/%{name} ]; then
+    # Binary in nested bin directory
+    install -Dpm755 ./%{name}-x86_64-unknown-linux-gnu/bin/%{name} %{buildroot}%{_bindir}/%{name}
+else
+    # If we can't find the binary, search for it
+    BINARY_PATH=$(find . -name "%{name}" -type f -executable | head -1)
+    if [ -n "$BINARY_PATH" ]; then
+        install -Dpm755 "$BINARY_PATH" %{buildroot}%{_bindir}/%{name}
+    else
+        echo "Could not find %{name} binary in the tarball"
+        exit 1
+    fi
+fi
 
 # Install shell completions
 mkdir -p %{buildroot}%{_datadir}/bash-completion/completions
