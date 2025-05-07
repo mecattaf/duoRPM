@@ -64,9 +64,8 @@ jobs:
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-python]')
         run: |
           copr-cli build-package mecattaf/zenRPM --nowait --name python-autotiling
-          copr-cli build-package mecattaf/zenRPM --nowait --name python-fabric
           copr-cli build-package mecattaf/zenRPM --nowait --name nwg-clipman --after-build-id "$cliphist_build_id"
-          copr-cli build-package mecattaf/zenRPM --nowait --name aider
+          copr-cli build-package mecattaf/zenRPM --nowait --name better-control
 
       # Build theme packages
       - name: Build theme packages
