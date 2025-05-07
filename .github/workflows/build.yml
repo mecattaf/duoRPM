@@ -17,7 +17,8 @@ jobs:
       contains(github.event.head_commit.message, '[build-rust]') ||
       contains(github.event.head_commit.message, '[build-python]') ||
       contains(github.event.head_commit.message, '[build-gcc]') ||
-      contains(github.event.head_commit.message, '[build-themes]')
+      contains(github.event.head_commit.message, '[build-themes]') ||
+      contains(github.event.head_commit.message, '[build-prebuilt]')
     runs-on: ubuntu-latest
     container:
       image: 'registry.fedoraproject.org/fedora-minimal:latest'
@@ -73,6 +74,13 @@ jobs:
         run: |
           parallel copr-cli build-package mecattaf/zenRPM --nowait --name ::: \
             bibata-cursor-themes 
+
+      # Build prebuilt packages (atuin, eza, starship)
+      - name: Build prebuilt packages
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-prebuilt]')
+        run: |
+          parallel copr-cli build-package mecattaf/zenRPM --nowait --name ::: \
+            atuin eza starship
 
       # Check build status (fixed version)
       - name: Check build status

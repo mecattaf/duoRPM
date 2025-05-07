@@ -1,4 +1,4 @@
-.PHONY: prepare goprep rustprep pythonprep themesprep gccprep srpm prebuild
+.PHONY: prepare goprep rustprep pythonprep themesprep gccprep prebuiltprep srpm prebuild
 
 # Define variables
 BUILDDIR := $(shell pwd)
@@ -28,6 +28,10 @@ themesprep: prepare
 gccprep: prepare
 	dnf install --nodocs -y gcc make
 
+prebuiltprep: prepare
+	# No special preparation needed for prebuilt binaries
+	dnf install --nodocs -y tar gzip xz
+
 prebuild:
 	@buildtype="unknown"; \
 	if grep -q "Name:.*wl-gammarelay-rs" "$(SPECFILE)"; then \
@@ -40,6 +44,8 @@ prebuild:
 		buildtype="theme"; \
 	elif grep -q "Name:.*lisgd" "$(SPECFILE)"; then \
 		buildtype="gcc"; \
+	elif grep -q "Name:.*atuin\|Name:.*eza\|Name:.*starship" "$(SPECFILE)"; then \
+		buildtype="prebuilt"; \
 	fi; \
 	case $$buildtype in \
 		"rust") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) rustprep;; \
@@ -47,6 +53,7 @@ prebuild:
 		"python") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) pythonprep;; \
 		"theme") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) themesprep;; \
 		"gcc") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) gccprep;; \
+		"prebuilt") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) prebuiltprep;; \
 		*) echo "Unknown package type in $(SPECFILE)"; exit 1;; \
 	esac
 
