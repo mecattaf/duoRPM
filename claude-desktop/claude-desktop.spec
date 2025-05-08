@@ -8,23 +8,21 @@ Version:        0.7.7
 Release:        %autorelease
 Summary:        Desktop application for Claude AI by Anthropic
 
-License:        Proprietary
-URL:            https://www.anthropic.com
+License:        MIT AND Apache-2.0
+URL:            https://github.com/bsneed/claude-desktop-fedora
 Source0:        %{source_url}
-Source1:        https://raw.githubusercontent.com/bsneed/claude-desktop-fedora/main/build-fedora.sh
-Source2:        https://raw.githubusercontent.com/bsneed/claude-desktop-fedora/main/LICENSE-MIT
-Source3:        https://raw.githubusercontent.com/bsneed/claude-desktop-fedora/main/LICENSE-APACHE
+# License files from bsneed/claude-desktop-fedora repo
+Source1:        https://raw.githubusercontent.com/bsneed/claude-desktop-fedora/main/LICENSE-MIT
+Source2:        https://raw.githubusercontent.com/bsneed/claude-desktop-fedora/main/LICENSE-APACHE
 
-# For dependencies, based on requirements in build-fedora.sh
+# For dependencies
 BuildRequires:  p7zip-plugins
 BuildRequires:  wget
-BuildRequires:  icoutils
-BuildRequires:  ImageMagick
 BuildRequires:  nodejs
 BuildRequires:  npm
 BuildRequires:  desktop-file-utils
 
-# Electron and runtime requirements
+# Runtime requirements
 Requires:       nodejs
 Requires:       electron
 Requires:       p7zip-plugins
@@ -36,26 +34,24 @@ Claude Desktop is the official desktop application for Claude AI by Anthropic.
 This package provides a Linux-compatible version of the official Windows desktop
 application, modified to work on Fedora-based systems.
 
-Features include:
-- Native desktop experience for Claude AI
-- Fast access via global keyboard shortcut (Ctrl+Alt+Space)
-- System tray integration
-- Full Claude functionality including file uploads and Claude Pro features
-
-Note: This is an unofficial build script; not officially supported by Anthropic.
+This is an unofficial adaptation and is not officially supported by Anthropic.
+The build scripts are dual-licensed under MIT and Apache 2.0, while the Claude 
+Desktop application itself is proprietary software from Anthropic.
 
 %prep
 # Create work directory
-mkdir -p %{_builddir}/claude-desktop-build
+mkdir -p %{_builddir}/%{name}-build
 
-# Download the build script for reference
-cp %{SOURCE1} %{_builddir}/claude-desktop-build/build-fedora.sh
-cp %{SOURCE2} %{_builddir}/claude-desktop-build/LICENSE-MIT
-cp %{SOURCE3} %{_builddir}/claude-desktop-build/LICENSE-APACHE
+# Copy license files
+cp %{SOURCE1} %{_builddir}/%{name}-build/
+cp %{SOURCE2} %{_builddir}/%{name}-build/
+
+# Download the Windows installer
+cd %{_builddir}/%{name}-build
+wget -c %{source_url} -O Claude-Setup-x64.exe
 
 # Extract the Windows installer
-cd %{_builddir}/claude-desktop-build
-7z x -y %{SOURCE0}
+7z x -y Claude-Setup-x64.exe
 
 # Find the nupkg file
 NUPKG_FILE=$(find . -name "AnthropicClaude-*-full.nupkg" | head -1)
@@ -67,27 +63,13 @@ fi
 # Extract the nupkg
 7z x -y "$NUPKG_FILE"
 
-# Extract icons
-wrestool -x -t 14 "lib/net45/claude.exe" -o claude.ico
-icotool -x claude.ico
-
 %build
-cd %{_builddir}/claude-desktop-build
-
-# Map icon sizes to their corresponding extracted files
-declare -A icon_files=(
-    ["16"]="claude_13_16x16x32.png"
-    ["24"]="claude_11_24x24x32.png"
-    ["32"]="claude_10_32x32x32.png"
-    ["48"]="claude_8_48x48x32.png"
-    ["64"]="claude_7_64x64x32.png"
-    ["256"]="claude_6_256x256x32.png"
-)
+cd %{_builddir}/%{name}-build
 
 # Process app.asar
 mkdir -p electron-app
 cp "lib/net45/resources/app.asar" electron-app/
-cp -r "lib/net45/resources/app.asar.unpacked" electron-app/
+cp -r "lib/net45/resources/app.asar.unpacked" electron-app/ || true
 
 cd electron-app
 npx asar extract app.asar app.asar.contents || { echo "asar extract failed"; exit 1; }
@@ -97,7 +79,7 @@ sed -i 's/height:e\.height,titleBarStyle:"default",titleBarOverlay:[^,]\+,/heigh
 
 # Create stub native module
 mkdir -p app.asar.contents/node_modules/claude-native
-cat > app.asar.contents/node_modules/claude-native/index.js << EOF
+cat > app.asar.contents/node_modules/claude-native/index.js << 'EOF'
 // Stub implementation of claude-native using KeyboardKey enum values
 const KeyboardKey = {
   Backspace: 43,
@@ -141,33 +123,32 @@ EOF
 
 # Copy Tray icons
 mkdir -p app.asar.contents/resources
-cp ../lib/net45/resources/Tray* app.asar.contents/resources/
+cp -f ../lib/net45/resources/Tray* app.asar.contents/resources/ || true
 
 # Repackage app.asar
 mkdir -p app.asar.contents/resources/i18n/
-cp ../lib/net45/resources/*.json app.asar.contents/resources/i18n/
+cp -f ../lib/net45/resources/*.json app.asar.contents/resources/i18n/ || true
 
 # Add main window fix from emsi's repository
-curl -sL https://github.com/emsi/claude-desktop/raw/main/assets/main_window.tgz | tar -zxvf - -C app.asar.contents/
+curl -sL https://github.com/emsi/claude-desktop/raw/main/assets/main_window.tgz | tar -zxvf - -C app.asar.contents/ || echo "Warning: Failed to add main window fix"
 
 # Pack the asar file
 npx asar pack app.asar.contents app.asar || { echo "asar pack failed"; exit 1; }
 
 %install
-cd %{_builddir}/claude-desktop-build
+cd %{_builddir}/%{name}-build
 
 # Create directory structure
 mkdir -p %{buildroot}%{_libdir}/%{name}
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_datadir}/applications
-mkdir -p %{buildroot}%{_datadir}/icons
 
-# Install app.asar and app.asar.unpacked
+# Install app.asar
 cp electron-app/app.asar %{buildroot}%{_libdir}/%{name}/
 
 # Create native module directory structure
 mkdir -p %{buildroot}%{_libdir}/%{name}/app.asar.unpacked/node_modules/claude-native
-cat > %{buildroot}%{_libdir}/%{name}/app.asar.unpacked/node_modules/claude-native/index.js << EOF
+cat > %{buildroot}%{_libdir}/%{name}/app.asar.unpacked/node_modules/claude-native/index.js << 'EOF'
 // Stub implementation of claude-native using KeyboardKey enum values
 const KeyboardKey = {
   Backspace: 43,
@@ -209,21 +190,11 @@ module.exports = {
 };
 EOF
 
-# Install icons
-for size in 16 24 32 48 64 256; do
-    icon_dir="%{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps"
-    mkdir -p "${icon_dir}"
-    if [ -f "${icon_files[$size]}" ]; then
-        install -Dm 644 "${icon_files[$size]}" "${icon_dir}/claude-desktop.png"
-    fi
-done
-
-# Install desktop entry
+# Install desktop entry (without icon reference)
 cat > %{buildroot}%{_datadir}/applications/%{name}.desktop << EOF
 [Desktop Entry]
 Name=Claude
 Exec=claude-desktop %u
-Icon=claude-desktop
 Type=Application
 Terminal=false
 Categories=Office;Utility;
@@ -243,10 +214,7 @@ chmod +x %{buildroot}%{_bindir}/%{name}
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %post
-# Update icon caches
-gtk-update-icon-cache -f -t %{_datadir}/icons/hicolor || :
-# Force icon theme cache rebuild
-touch -h %{_datadir}/icons/hicolor >/dev/null 2>&1 || :
+# Update desktop database
 update-desktop-database %{_datadir}/applications || :
 
 # Set correct permissions for chrome-sandbox
@@ -286,12 +254,11 @@ else
 fi
 
 %files
-%license %{_builddir}/claude-desktop-build/LICENSE-MIT
-%license %{_builddir}/claude-desktop-build/LICENSE-APACHE
+%license %{_builddir}/%{name}-build/LICENSE-MIT
+%license %{_builddir}/%{name}-build/LICENSE-APACHE
 %{_bindir}/%{name}
 %{_libdir}/%{name}/
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/icons/hicolor/*/apps/claude-desktop.png
 
 %changelog
 * Wed May 08 2025 Package Maintainer <maintainer@example.com> - 0.7.7-1
