@@ -63,14 +63,34 @@ else
     fi
 fi
 
-# Install shell completions
+# Install shell completions - check supported commands first
 mkdir -p %{buildroot}%{_datadir}/bash-completion/completions
 mkdir -p %{buildroot}%{_datadir}/fish/vendor_completions.d
 mkdir -p %{buildroot}%{_datadir}/zsh/site-functions
 
-%{buildroot}%{_bindir}/%{name} completions bash > %{buildroot}%{_datadir}/bash-completion/completions/%{name}
-%{buildroot}%{_bindir}/%{name} completions fish > %{buildroot}%{_datadir}/fish/vendor_completions.d/%{name}.fish
-%{buildroot}%{_bindir}/%{name} completions zsh > %{buildroot}%{_datadir}/zsh/site-functions/_%{name}
+# Check if completions command exists by looking at help output
+if %{buildroot}%{_bindir}/%{name} --help | grep -q "completions"; then
+    # Modern syntax with a 'completions' subcommand
+    %{buildroot}%{_bindir}/%{name} completions bash > %{buildroot}%{_datadir}/bash-completion/completions/%{name} || :
+    %{buildroot}%{_bindir}/%{name} completions fish > %{buildroot}%{_datadir}/fish/vendor_completions.d/%{name}.fish || :
+    %{buildroot}%{_bindir}/%{name} completions zsh > %{buildroot}%{_datadir}/zsh/site-functions/_%{name} || :
+elif %{buildroot}%{_bindir}/%{name} --help | grep -q "generate-completions"; then
+    # Alternative syntax with 'generate-completions'
+    %{buildroot}%{_bindir}/%{name} generate-completions bash > %{buildroot}%{_datadir}/bash-completion/completions/%{name} || :
+    %{buildroot}%{_bindir}/%{name} generate-completions fish > %{buildroot}%{_datadir}/fish/vendor_completions.d/%{name}.fish || :
+    %{buildroot}%{_bindir}/%{name} generate-completions zsh > %{buildroot}%{_datadir}/zsh/site-functions/_%{name} || :
+elif %{buildroot}%{_bindir}/%{name} --help | grep -q "completion"; then
+    # Single 'completion' command variant
+    %{buildroot}%{_bindir}/%{name} completion bash > %{buildroot}%{_datadir}/bash-completion/completions/%{name} || :
+    %{buildroot}%{_bindir}/%{name} completion fish > %{buildroot}%{_datadir}/fish/vendor_completions.d/%{name}.fish || :
+    %{buildroot}%{_bindir}/%{name} completion zsh > %{buildroot}%{_datadir}/zsh/site-functions/_%{name} || :
+else
+    # If no completion command is found, create empty files
+    echo "# Atuin auto-completion is not available for this version" > %{buildroot}%{_datadir}/bash-completion/completions/%{name}
+    echo "# Atuin auto-completion is not available for this version" > %{buildroot}%{_datadir}/fish/vendor_completions.d/%{name}.fish
+    echo "# Atuin auto-completion is not available for this version" > %{buildroot}%{_datadir}/zsh/site-functions/_%{name}
+    echo "WARNING: No completion command found in atuin. Skipping shell completions."
+fi
 
 %files
 %license LICENSE
