@@ -71,6 +71,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-rust]')
         run: |
           copr-cli build-package mecattaf/zenRPM --nowait --name wl-gammarelay-rs
+          copr-cli build-package mecattaf/zenRPM --nowait --name iwmenu
 
       # Build Python packages with dependencies
       - name: Build Python packages
