@@ -34,7 +34,7 @@ prebuiltprep: prepare
 
 prebuild:
 	@buildtype="unknown"; \
-	if grep -q "Name:.*wl-gammarelay-rs\|Name:.*iwmenu" "$(SPECFILE)"; then \
+	if grep -q "Name:.*wl-gammarelay-rs" "$(SPECFILE)"; then \
 		buildtype="rust"; \
 	elif grep -q "Name:.*cliphist\|Name:.*nwg-look\|Name:.*xcur2png" "$(SPECFILE)"; then \
 		buildtype="go"; \
@@ -44,7 +44,7 @@ prebuild:
 		buildtype="theme"; \
 	elif grep -q "Name:.*lisgd\|Name:.*scroll" "$(SPECFILE)"; then \
 		buildtype="gcc"; \
-	elif grep -q "Name:.*atuin\|Name:.*eza\|Name:.*starship" "$(SPECFILE)"; then \
+	elif grep -q "Name:.*atuin\|Name:.*eza\|Name:.*starship\|Name:.*iwmenu" "$(SPECFILE)"; then \
 		buildtype="prebuilt"; \
 	fi; \
 	case $$buildtype in \
