@@ -94,7 +94,6 @@ jobs:
         run: |
           # Build each prebuilt package independently since they tend to have specific issues
           copr-cli build-package mecattaf/zenRPM --nowait --name atuin
-          copr-cli build-package mecattaf/zenRPM --nowait --name claude-desktop
           copr-cli build-package mecattaf/zenRPM --nowait --name eza
           copr-cli build-package mecattaf/zenRPM --nowait --name starship
 

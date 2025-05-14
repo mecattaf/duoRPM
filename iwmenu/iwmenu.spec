@@ -10,6 +10,7 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 BuildRequires:  cargo
 BuildRequires:  rust
 BuildRequires:  gcc
+BuildRequires:  rust-packaging
 BuildRequires:  pkgconfig(dbus-1)
 
 Requires:       iwd
@@ -28,12 +29,37 @@ It provides:
 
 %prep
 %autosetup
+# Set up cargo vendor configuration
+%if 0%{?fedora} >= 37 || 0%{?rhel} >= 9
+%cargo_prep
+%else
+# For older distros that don't have cargo_prep
+%{__cargo} vendor
+mkdir -p .cargo
+cat > .cargo/config << EOF
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "vendor"
+EOF
+%endif
 
 %build
+%if 0%{?fedora} >= 37 || 0%{?rhel} >= 9
 %cargo_build
+%else
+# For older distros that don't have cargo_build
+%{__cargo} build --release %{?_smp_mflags}
+%endif
 
 %install
+%if 0%{?fedora} >= 37 || 0%{?rhel} >= 9
 %cargo_install
+%else
+# For older distros that don't have cargo_install
+install -Dpm0755 target/release/%{name} %{buildroot}%{_bindir}/%{name}
+%endif
 
 %files
 %license LICENSE.md
