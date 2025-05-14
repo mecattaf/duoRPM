@@ -1,3 +1,5 @@
+%global debug_package %{nil}
+
 Name:           iwmenu
 Version:        0.2.0
 Release:        1%{?dist}
@@ -5,14 +7,14 @@ Summary:        Launcher-driven Wi-Fi manager for Linux
 
 License:        GPL-3.0
 URL:            https://github.com/e-tho/iwmenu
-Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/releases/download/v%{version}/%{name}-x86_64-linux-gnu
+Source1:        %{url}/releases/download/v%{version}/LICENSE.md
+Source2:        %{url}/releases/download/v%{version}/README.md
+Source3:        %{url}/releases/download/v%{version}/CONTRIBUTING.md
 
-BuildRequires:  cargo
-BuildRequires:  rust
-BuildRequires:  gcc
-BuildRequires:  rust-packaging
-BuildRequires:  pkgconfig(dbus-1)
-
+# This is a prebuilt binary package, only available for x86_64
+ExclusiveArch:  x86_64
+Requires:       glibc
 Requires:       iwd
 Requires:       dbus
 
@@ -28,43 +30,40 @@ It provides:
 - Both font-based and XDG icon support
 
 %prep
-%autosetup
-# Set up cargo vendor configuration
-%if 0%{?fedora} >= 37 || 0%{?rhel} >= 9
-%cargo_prep
-%else
-# For older distros that don't have cargo_prep
-%{__cargo} vendor
-mkdir -p .cargo
-cat > .cargo/config << EOF
-[source.crates-io]
-replace-with = "vendored-sources"
-
-[source.vendored-sources]
-directory = "vendor"
-EOF
-%endif
+# No need for standard setup since we're using prebuilt binaries
+%setup -q -c -T
+cp %{SOURCE0} %{name}
+cp %{SOURCE1} LICENSE.md
+cp %{SOURCE2} README.md
+cp %{SOURCE3} CONTRIBUTING.md
 
 %build
-%if 0%{?fedora} >= 37 || 0%{?rhel} >= 9
-%cargo_build
-%else
-# For older distros that don't have cargo_build
-%{__cargo} build --release %{?_smp_mflags}
-%endif
+# Nothing to build - using prebuilt binary
 
 %install
-%if 0%{?fedora} >= 37 || 0%{?rhel} >= 9
-%cargo_install
-%else
-# For older distros that don't have cargo_install
-install -Dpm0755 target/release/%{name} %{buildroot}%{_bindir}/%{name}
-%endif
+# Install binary
+install -Dm755 %{name} %{buildroot}%{_bindir}/%{name}
+
+# Generate and install shell completions if the binary supports it
+if ./%{name} --help | grep -q completion; then
+  mkdir -p %{buildroot}%{_datadir}/bash-completion/completions
+  mkdir -p %{buildroot}%{_datadir}/fish/vendor_completions.d
+  mkdir -p %{buildroot}%{_datadir}/zsh/site-functions
+  
+  ./%{name} completion bash > %{buildroot}%{_datadir}/bash-completion/completions/%{name} || :
+  ./%{name} completion fish > %{buildroot}%{_datadir}/fish/vendor_completions.d/%{name}.fish || :
+  ./%{name} completion zsh > %{buildroot}%{_datadir}/zsh/site-functions/_%{name} || :
+fi
 
 %files
 %license LICENSE.md
 %doc README.md CONTRIBUTING.md
 %{_bindir}/%{name}
+%if 0%{?_datadir:1}
+%{_datadir}/bash-completion/completions/%{name}
+%{_datadir}/fish/vendor_completions.d/%{name}.fish
+%{_datadir}/zsh/site-functions/_%{name}
+%endif
 
 %changelog
 * Tue May 13 2025 Package Maintainer <maintainer@example.com> - 0.2.0-1
