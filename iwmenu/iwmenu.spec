@@ -8,9 +8,6 @@ Summary:        Launcher-driven Wi-Fi manager for Linux
 License:        GPL-3.0
 URL:            https://github.com/e-tho/iwmenu
 Source0:        %{url}/releases/download/v%{version}/%{name}-x86_64-linux-gnu
-Source1:        %{url}/releases/download/v%{version}/LICENSE.md
-Source2:        %{url}/releases/download/v%{version}/README.md
-Source3:        %{url}/releases/download/v%{version}/CONTRIBUTING.md
 
 # This is a prebuilt binary package, only available for x86_64
 ExclusiveArch:  x86_64
@@ -33,9 +30,6 @@ It provides:
 # No need for standard setup since we're using prebuilt binaries
 %setup -q -c -T
 cp %{SOURCE0} %{name}
-cp %{SOURCE1} LICENSE.md
-cp %{SOURCE2} README.md
-cp %{SOURCE3} CONTRIBUTING.md
 
 %build
 # Nothing to build - using prebuilt binary
@@ -56,8 +50,6 @@ if ./%{name} --help | grep -q completion; then
 fi
 
 %files
-%license LICENSE.md
-%doc README.md CONTRIBUTING.md
 %{_bindir}/%{name}
 %if 0%{?_datadir:1}
 %{_datadir}/bash-completion/completions/%{name}
