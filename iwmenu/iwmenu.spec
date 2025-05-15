@@ -38,24 +38,8 @@ cp %{SOURCE0} %{name}
 # Install binary
 install -Dm755 %{name} %{buildroot}%{_bindir}/%{name}
 
-# Generate and install shell completions if the binary supports it
-if ./%{name} --help | grep -q completion; then
-  mkdir -p %{buildroot}%{_datadir}/bash-completion/completions
-  mkdir -p %{buildroot}%{_datadir}/fish/vendor_completions.d
-  mkdir -p %{buildroot}%{_datadir}/zsh/site-functions
-  
-  ./%{name} completion bash > %{buildroot}%{_datadir}/bash-completion/completions/%{name} || :
-  ./%{name} completion fish > %{buildroot}%{_datadir}/fish/vendor_completions.d/%{name}.fish || :
-  ./%{name} completion zsh > %{buildroot}%{_datadir}/zsh/site-functions/_%{name} || :
-fi
-
 %files
 %{_bindir}/%{name}
-%if 0%{?_datadir:1}
-%{_datadir}/bash-completion/completions/%{name}
-%{_datadir}/fish/vendor_completions.d/%{name}.fish
-%{_datadir}/zsh/site-functions/_%{name}
-%endif
 
 %changelog
 * Tue May 13 2025 Package Maintainer <maintainer@example.com> - 0.2.0-1
