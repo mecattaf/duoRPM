@@ -1,3 +1,7 @@
+> [!CAUTION]
+> This COPR will soon be renamed to "duoRPM" on or around June 5 so please make sure to follow when this changes! 
+
+
 # Automated Fedora COPR Repository Management with GitHub Actions
 
 This guide explains how to set up and maintain Fedora COPR repositories using GitHub Actions for automated builds and updates. This approach allows you to manage your RPM packages through Git while automating the build and publication process.
