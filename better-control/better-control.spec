@@ -1,5 +1,5 @@
 %global forgeurl https://github.com/quantumvoid0/better-control
-Version:        6.11.8
+Version:        6.12.0
 %forgemeta
 
 Name:           better-control
@@ -108,6 +108,12 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_datadir}/applications/%{name}.desktop
 
 %changelog
+* Mon Jun 02 2025 Automated Build <builder@copr.fedoraproject.org> - 6.12.0-1
+- Update to version 6.12.0
+
+* Wed May 28 2025 Automated Build <builder@copr.fedoraproject.org> - 6.11.9-1
+- Update to version 6.11.9
+
 * Mon May 26 2025 Automated Build <builder@copr.fedoraproject.org> - 6.11.8-1
 - Update to version 6.11.8
 
