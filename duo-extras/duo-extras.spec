@@ -6,7 +6,7 @@ Release:        1%{?dist}
 Summary:        Catppuccin themes and icons for duo desktop environment
 
 License:        MIT
-URL:            https://github.com/mecattaf/zenRPM
+URL:            https://github.com/mecattaf/duoRPM
 Source0:        %{url}/releases/download/v%{version}/catppuccin-icons.tar.gz
 Source1:        %{url}/releases/download/v%{version}/catppuccin-themes.tar.gz
 

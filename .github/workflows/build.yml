@@ -44,60 +44,60 @@ jobs:
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-wayland]') || contains(github.event.head_commit.message, '[build-gcc]')
         run: |
           # First build wayland
-          wayland_build_id=$(copr-cli build-package mecattaf/zenRPM --nowait --name wayland | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
+          wayland_build_id=$(copr-cli build-package mecattaf/duoRPM --nowait --name wayland | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
           echo "WAYLAND_BUILD_ID=$wayland_build_id" >> $GITHUB_ENV
           
           # Then build wlroots after wayland
-          wlroots_build_id=$(copr-cli build-package mecattaf/zenRPM --nowait --name wlroots --after-build-id "$WAYLAND_BUILD_ID" | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
+          wlroots_build_id=$(copr-cli build-package mecattaf/duoRPM --nowait --name wlroots --after-build-id "$WAYLAND_BUILD_ID" | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
           echo "WLROOTS_BUILD_ID=$wlroots_build_id" >> $GITHUB_ENV
 
       # Prevent race conditions by starting with xcur2png
       - name: Build xcur2png first (dependency)
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-go]')
         run: |
-          xcur2png_build_id=$(copr-cli build-package mecattaf/zenRPM --nowait --name xcur2png | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
+          xcur2png_build_id=$(copr-cli build-package mecattaf/duoRPM --nowait --name xcur2png | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
           echo "XCUR2PNG_BUILD_ID=$xcur2png_build_id" >> $GITHUB_ENV
 
       # Build cliphist second (dependency for nwg-clipman)
       - name: Build cliphist (dependency)
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-go]')
         run: |
-          cliphist_build_id=$(copr-cli build-package mecattaf/zenRPM --nowait --name cliphist | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
+          cliphist_build_id=$(copr-cli build-package mecattaf/duoRPM --nowait --name cliphist | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
           echo "CLIPHIST_BUILD_ID=$cliphist_build_id" >> $GITHUB_ENV
 
       # Build GCC packages (lisgd and scroll)
       - name: Build GCC packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-gcc]')
         run: |
-          copr-cli build-package mecattaf/zenRPM --nowait --name lisgd
-          copr-cli build-package mecattaf/zenRPM --nowait --name scroll --after-build-id "$WLROOTS_BUILD_ID"
+          copr-cli build-package mecattaf/duoRPM --nowait --name lisgd
+          copr-cli build-package mecattaf/duoRPM --nowait --name scroll --after-build-id "$WLROOTS_BUILD_ID"
 
       # Build remaining Go packages (nwg-look) that depend on xcur2png
       - name: Build Go packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-go]')
         run: |
           # Build nwg-look after xcur2png
-          copr-cli build-package mecattaf/zenRPM --nowait --name nwg-look --after-build-id "$XCUR2PNG_BUILD_ID"
+          copr-cli build-package mecattaf/duoRPM --nowait --name nwg-look --after-build-id "$XCUR2PNG_BUILD_ID"
 
       # Build Rust package
       - name: Build Rust package
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-rust]')
         run: |
-          copr-cli build-package mecattaf/zenRPM --nowait --name wl-gammarelay-rs
+          copr-cli build-package mecattaf/duoRPM --nowait --name wl-gammarelay-rs
 
       # Build Python packages with dependencies
       - name: Build Python packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-python]')
         run: |
-          copr-cli build-package mecattaf/zenRPM --nowait --name python-autotiling
-          copr-cli build-package mecattaf/zenRPM --nowait --name nwg-clipman --after-build-id "$CLIPHIST_BUILD_ID"
-          copr-cli build-package mecattaf/zenRPM --nowait --name better-control
+          copr-cli build-package mecattaf/duoRPM --nowait --name python-autotiling
+          copr-cli build-package mecattaf/duoRPM --nowait --name nwg-clipman --after-build-id "$CLIPHIST_BUILD_ID"
+          copr-cli build-package mecattaf/duoRPM --nowait --name better-control
 
       # Build theme packages
       - name: Build theme packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-themes]')
         run: |
-          parallel copr-cli build-package mecattaf/zenRPM --nowait --name ::: \
+          parallel copr-cli build-package mecattaf/duoRPM --nowait --name ::: \
             bibata-cursor-themes 
             duo-extras
 
@@ -106,14 +106,14 @@ jobs:
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-prebuilt]')
         run: |
           # Build each prebuilt package independently since they tend to have specific issues
-          copr-cli build-package mecattaf/zenRPM --nowait --name atuin
-          copr-cli build-package mecattaf/zenRPM --nowait --name eza
-          copr-cli build-package mecattaf/zenRPM --nowait --name starship
-          copr-cli build-package mecattaf/zenRPM --nowait --name iwmenu
+          copr-cli build-package mecattaf/duoRPM --nowait --name atuin
+          copr-cli build-package mecattaf/duoRPM --nowait --name eza
+          copr-cli build-package mecattaf/duoRPM --nowait --name starship
+          copr-cli build-package mecattaf/duoRPM --nowait --name iwmenu
 
       # Check build status (fixed version)
       - name: Check build status
         if: always()
         run: |
           sleep 60  # Give COPR more time to register all builds
-          copr-cli list-builds mecattaf/zenRPM
+          copr-cli list-builds mecattaf/duoRPM
