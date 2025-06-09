@@ -1,6 +1,7 @@
 # Automated Fedora COPR Repository Management with GitHub Actions
 
 This guide explains how to set up and maintain Fedora COPR repositories using GitHub Actions for automated builds and updates. This approach allows you to manage your RPM packages through Git while automating the build and publication process.
+I use it for my bluebuild-based OS.
 
 ## Acknowledgments
 
