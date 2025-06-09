@@ -12,7 +12,6 @@ Source0:        %{url}/archive/refs/tags/%{tag}.tar.gz
 # Minimal configuration file for headless or buildroot use
 Source100:      config.minimal
 Source101:      scroll-portals.conf
-Source102:      README.md
 
 # Upstream patches
 
@@ -135,15 +134,11 @@ Suitable for headless or buildroot use.
 install -D -m644 -pv %{SOURCE100} %{buildroot}%{_sysconfdir}/%{name}/config.minimal
 # Install portals.conf for xdg-desktop-portal
 install -D -m644 -pv %{SOURCE101} %{buildroot}%{_datadir}/xdg-desktop-portal/%{name}-portals.conf
-# install the documentation
-install -D -m644 -pv README.md    %{buildroot}%{_pkgdocdir}/README.md
-install -D -m644 -pv %{SOURCE102} %{buildroot}%{_pkgdocdir}/README.Fedora
 # Create directory for extra config snippets
 install -d -m755 -pv %{buildroot}%{_sysconfdir}/%{name}/config.d
 
 %files
 %license LICENSE
-%doc %{_pkgdocdir}
 %dir %{_sysconfdir}/%{name}
 %dir %{_sysconfdir}/%{name}/config.d
 %{_mandir}/man1/%{name}*
