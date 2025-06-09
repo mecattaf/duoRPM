@@ -98,7 +98,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-themes]')
         run: |
           parallel copr-cli build-package mecattaf/duoRPM --nowait --name ::: \
-            bibata-cursor-themes 
+            bibata-cursor-themes \ 
             duo-extras
 
       # Build prebuilt packages (atuin, eza, starship)
