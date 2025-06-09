@@ -1,22 +1,29 @@
-%global commit ed43b332d4f93c955d825256e6ef9e9bcdbd297e
-%global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commit_date 20250510
-%global snap %{commit_date}git%{shortcommit}
+%global tag     1.11
 
 Name:           scroll
-Version:        0.1.0~%{snap}
-Release:        0.1%{?dist}
-Summary:        Wayland compositor with a scrolling layout forked from sway
-
+Version:        1.11
+Release:        1%{?dist}
+Summary:        i3-compatible Wayland compositor with a scrolling layout
 License:        MIT
 URL:            https://github.com/dawsers/scroll
-Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/releases/download/%{tag}/%{name}-%{tag}.tar.gz
+Source1:        %{url}/releases/download/%{tag}/%{name}-%{tag}.tar.gz.sig
+# 0FDE7BE0E88F5E48: emersion <contact@emersion.fr>
+Source2:        https://emersion.fr/.well-known/openpgpkey/hu/dj3498u4hyyarh35rkjfnghbjxug6b19#/gpgkey-0FDE7BE0E88F5E48.gpg
+
+# Minimal configuration file for headless or buildroot use
 Source100:      config.minimal
 Source101:      scroll-portals.conf
+Source102:      README.md
+
+# Upstream patches
+
+# Fedora patches
 
 # Conditional patches
 
 BuildRequires:  gcc-c++
+BuildRequires:  gnupg2
 BuildRequires:  meson >= 0.60.0
 BuildRequires:  pkgconfig(cairo)
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0)
@@ -41,13 +48,14 @@ BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xcb-icccm)
 BuildRequires:  pkgconfig(xkbcommon) >= 1.5.0
 
-# Require the configuration package
+# Require any of the available configuration packages;
+# Prefer the -upstream one if none are directly specified in the package manager transaction
 Requires:       %{name}-config
-Suggests:       %{name}-config-minimal
+Suggests:       %{name}-config-upstream
 
 %description
-Scroll is a tiling window manager supporting Wayland compositor protocol and 
-sway/i3-compatible configuration. The main difference is scroll only supports 
+Scroll is a tiling window manager supporting Wayland compositor protocol and
+i3/sway-compatible configuration. The main difference is scroll only supports
 one layout, a scrolling layout similar to PaperWM, niri or hyprscroller.
 
 Scroll adds features such as:
@@ -58,8 +66,49 @@ Scroll adds features such as:
 - Trackpad/Mouse scrolling navigation
 - Support for both portrait and landscape monitor orientations
 
+
 # Configuration presets:
 #
+%package        config-upstream
+Summary:        Upstream configuration for Scroll
+BuildArch:      noarch
+Requires:       %{name} = %{version}-%{release}
+Provides:       %{name}-config = %{version}-%{release}
+Conflicts:      %{name}-config
+
+# Require the wallpaper referenced in the config (if using sway wallpapers)
+Recommends:     sway-wallpapers
+# Lack of graphical drivers may hurt the common use case
+Requires:       mesa-dri-drivers
+# Logind needs polkit to create a graphical session
+Requires:       polkit
+# swaybg is used in the default config
+Requires:       swaybg
+# dmenu (as well as rxvt any many others) requires XWayland on Scroll
+Requires:       xorg-x11-server-Xwayland
+
+# Scroll binds the terminal shortcut to one specific terminal. In our case foot
+Recommends:     foot
+# grim is the recommended way to take screenshots on scroll 1.0+
+Recommends:     grim
+# wmenu is the default launcher in scroll
+Recommends:     wmenu
+# Install configs and scripts for better integration with systemd user session
+Recommends:     sway-systemd
+# Both utilities are suggested in the default configuration
+Recommends:     swayidle
+Recommends:     swaylock
+
+# Minimal installation doesn't include Qt Wayland backend
+Recommends:     (qt5-qtwayland if qt5-qtbase-gui)
+Recommends:     (qt6-qtwayland if qt6-qtbase-gui)
+
+%description    config-upstream
+Upstream configuration for Scroll.
+Includes all important dependencies for a typical desktop system
+with minimal or no divergence from the upstream.
+
+
 %package        config-minimal
 RemovePathPostfixes:  .minimal
 Summary:        Minimal configuration for Scroll
@@ -73,8 +122,13 @@ Conflicts:      %{name}-config
 Minimal configuration for Scroll without any extra dependencies.
 Suitable for headless or buildroot use.
 
+
 %prep
-%autosetup -n %{name}-%{commit}
+%{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
+%autosetup -N -n %{name}-%{tag}
+# apply unconditional patches
+#autopatch -p1 -M99
+# apply conditional patches
 
 %build
 %meson \
@@ -89,7 +143,8 @@ install -D -m644 -pv %{SOURCE100} %{buildroot}%{_sysconfdir}/%{name}/config.mini
 # Install portals.conf for xdg-desktop-portal
 install -D -m644 -pv %{SOURCE101} %{buildroot}%{_datadir}/xdg-desktop-portal/%{name}-portals.conf
 # install the documentation
-install -D -m644 -pv README.md %{buildroot}%{_pkgdocdir}/README.md
+install -D -m644 -pv README.md    %{buildroot}%{_pkgdocdir}/README.md
+install -D -m644 -pv %{SOURCE102} %{buildroot}%{_pkgdocdir}/README.Fedora
 # Create directory for extra config snippets
 install -d -m755 -pv %{buildroot}%{_sysconfdir}/%{name}/config.d
 
@@ -110,11 +165,20 @@ install -d -m755 -pv %{buildroot}%{_sysconfdir}/%{name}/config.d
 %{bash_completions_dir}/%{name}*
 %{fish_completions_dir}/%{name}*.fish
 %{zsh_completions_dir}/_%{name}*
+
+%files config-upstream
+%config(noreplace) %{_sysconfdir}/%{name}/config
 %{_datadir}/wayland-sessions/%{name}.desktop
 
 %files config-minimal
 %config(noreplace) %{_sysconfdir}/%{name}/config.minimal
 
 %changelog
+* Sat May 10 2025 Thomas Mecattaf <thomas@mecattaf.dev> - 1.11-1
+- Update to stable release 1.11
+- First stable release of scroll, forked from sway 1.11
+- Added GPG signature verification
+- Split configuration into upstream and minimal packages
+
 * Sat May 10 2025 Thomas Mecattaf <thomas@mecattaf.dev> - 0.1.0~20250510gited43b3-0.1
 - Initial package of scroll using git snapshot
