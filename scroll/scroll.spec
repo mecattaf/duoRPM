@@ -6,10 +6,8 @@ Release:        1%{?dist}
 Summary:        i3-compatible Wayland compositor with a scrolling layout
 License:        MIT
 URL:            https://github.com/dawsers/scroll
-Source0:        %{url}/releases/download/%{tag}/%{name}-%{tag}.tar.gz
-Source1:        %{url}/releases/download/%{tag}/%{name}-%{tag}.tar.gz.sig
-# 0FDE7BE0E88F5E48: emersion <contact@emersion.fr>
-Source2:        https://emersion.fr/.well-known/openpgpkey/hu/dj3498u4hyyarh35rkjfnghbjxug6b19#/gpgkey-0FDE7BE0E88F5E48.gpg
+# Use archive URL instead of release tarball since release tarball doesn't exist
+Source0:        %{url}/archive/refs/tags/%{tag}.tar.gz
 
 # Minimal configuration file for headless or buildroot use
 Source100:      config.minimal
@@ -23,7 +21,6 @@ Source102:      README.md
 # Conditional patches
 
 BuildRequires:  gcc-c++
-BuildRequires:  gnupg2
 BuildRequires:  meson >= 0.60.0
 BuildRequires:  pkgconfig(cairo)
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0)
@@ -124,11 +121,7 @@ Suitable for headless or buildroot use.
 
 
 %prep
-%{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
-%autosetup -N -n %{name}-%{tag}
-# apply unconditional patches
-#autopatch -p1 -M99
-# apply conditional patches
+%autosetup -n %{name}-%{tag}
 
 %build
 %meson \
@@ -177,7 +170,6 @@ install -d -m755 -pv %{buildroot}%{_sysconfdir}/%{name}/config.d
 * Sat May 10 2025 Thomas Mecattaf <thomas@mecattaf.dev> - 1.11-1
 - Update to stable release 1.11
 - First stable release of scroll, forked from sway 1.11
-- Added GPG signature verification
 - Split configuration into upstream and minimal packages
 
 * Sat May 10 2025 Thomas Mecattaf <thomas@mecattaf.dev> - 0.1.0~20250510gited43b3-0.1

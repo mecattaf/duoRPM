@@ -91,7 +91,6 @@ jobs:
         run: |
           copr-cli build-package mecattaf/duoRPM --nowait --name python-autotiling
           copr-cli build-package mecattaf/duoRPM --nowait --name nwg-clipman --after-build-id "$CLIPHIST_BUILD_ID"
-          copr-cli build-package mecattaf/duoRPM --nowait --name better-control
 
       # Build theme packages
       - name: Build theme packages
