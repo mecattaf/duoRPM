@@ -40,7 +40,7 @@ prebuild:
 		buildtype="go"; \
 	elif grep -q "Name:.*python-\|Name:.*nwg-clipman\|Name:.*better-control" "$(SPECFILE)"; then \
 		buildtype="python"; \
-	elif grep -q "Name:.*bibata-cursor-themes" "$(SPECFILE)"; then \
+	elif grep -q "Name:.*bibata-cursor-themes\|Name:.*duo-extras" "$(SPECFILE)"; then \
 		buildtype="theme"; \
 	elif grep -q "Name:.*lisgd\|Name:.*scroll\|Name:.*wlroots\|Name:.*wayland" "$(SPECFILE)"; then \
 		buildtype="gcc"; \

@@ -99,6 +99,7 @@ jobs:
         run: |
           parallel copr-cli build-package mecattaf/zenRPM --nowait --name ::: \
             bibata-cursor-themes 
+            duo-extras
 
       # Build prebuilt packages (atuin, eza, starship)
       - name: Build prebuilt packages
