@@ -72,8 +72,6 @@ Requires:       %{name} = %{version}-%{release}
 Provides:       %{name}-config = %{version}-%{release}
 Conflicts:      %{name}-config
 
-# Require the wallpaper referenced in the config (if using sway wallpapers)
-Recommends:     sway-wallpapers
 # Lack of graphical drivers may hurt the common use case
 Requires:       mesa-dri-drivers
 # Logind needs polkit to create a graphical session
@@ -130,6 +128,10 @@ Suitable for headless or buildroot use.
 
 %install
 %meson_install
+
+# Remove wallpaper assets to prevent unpackaged files error
+rm -rf %{buildroot}%{_datadir}/backgrounds 2>/dev/null || true
+
 # Install minimal configuration file
 install -D -m644 -pv %{SOURCE100} %{buildroot}%{_sysconfdir}/%{name}/config.minimal
 # Install portals.conf for xdg-desktop-portal
