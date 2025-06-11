@@ -1,7 +1,7 @@
-%global tag     1.11
+%global tag     null
 
 Name:           scroll
-Version:        1.11
+Version:        null
 Release:        1%{?dist}
 Summary:        i3-compatible Wayland compositor with a scrolling layout
 License:        MIT
@@ -164,6 +164,8 @@ install -d -m755 -pv %{buildroot}%{_sysconfdir}/%{name}/config.d
 %config(noreplace) %{_sysconfdir}/%{name}/config.minimal
 
 %changelog
+* Wed Jun 11 2025 Thomas Mecattaf <thomas@mecattaf.dev> - null-1
+- Update to null
 * Sat May 10 2025 Thomas Mecattaf <thomas@mecattaf.dev> - 1.11-1
 - Update to stable release 1.11
 - First stable release of scroll, forked from sway 1.11
