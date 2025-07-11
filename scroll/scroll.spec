@@ -62,7 +62,6 @@ Scroll adds features such as:
 - Trackpad/Mouse scrolling navigation
 - Support for both portrait and landscape monitor orientations
 
-
 # Configuration presets:
 #
 %package        config-upstream
