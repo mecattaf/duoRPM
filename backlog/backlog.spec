@@ -12,8 +12,6 @@ Source1:        %{url}/releases/download/v%{version}/backlog-bun-linux-arm64
 Source2:        https://raw.githubusercontent.com/MrLesk/Backlog.md/v%{version}/README.md
 Source3:        https://raw.githubusercontent.com/MrLesk/Backlog.md/v%{version}/LICENSE
 
-# This is a prebuilt binary package
-BuildArch:      noarch
 ExclusiveArch:  x86_64 aarch64
 
 Requires:       git-core
