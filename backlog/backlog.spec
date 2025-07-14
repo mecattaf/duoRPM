@@ -44,13 +44,14 @@ cp %{SOURCE3} ./LICENSE
 # Binary release, nothing to build
 
 %install
-# Install the appropriate binary based on architecture
+mkdir -p %{buildroot}%{_bindir}
+
 %ifarch x86_64
-install -Dpm755 %{SOURCE0} %{buildroot}%{_bindir}/backlog
+install -m755 %{SOURCE0} %{buildroot}%{_bindir}/backlog
 %endif
 
 %ifarch aarch64
-install -Dpm755 %{SOURCE1} %{buildroot}%{_bindir}/backlog
+install -m755 %{SOURCE1} %{buildroot}%{_bindir}/backlog
 %endif
 
 # No shell completions are provided by backlog CLI
