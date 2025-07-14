@@ -33,7 +33,6 @@ Features:
 - Modern web interface - backlog browser launches a sleek web UI
 - AI-ready CLI - "Claude, please take over task 33"
 - Rich query commands - view, list, filter, or archive tasks with ease
-- Cross-platform - runs on macOS, Linux, and Windows
 - MIT-licensed & open-source - free for personal or commercial use
 
 %prep
