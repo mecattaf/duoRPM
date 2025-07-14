@@ -108,6 +108,7 @@ jobs:
           copr-cli build-package mecattaf/duoRPM --nowait --name eza
           copr-cli build-package mecattaf/duoRPM --nowait --name starship
           copr-cli build-package mecattaf/duoRPM --nowait --name iwmenu
+          copr-cli build-package mecattaf/duoRPM --nowait --name backlog
 
       # Check build status (fixed version)
       - name: Check build status
