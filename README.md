@@ -5,7 +5,7 @@ I use it for my bluebuild-based OS.
 
 ## Acknowledgments
 
-This workflow draws significant inspiration from [solopasha's hyprlandRPM repository](https://github.com/solopasha/hyprlandRPM), which demonstrates excellent practices for COPR repository management through GitHub Actions.
+This workflow draws significant inspiration from [solopasha's hyprlandRPM repository](https://github.com/solopasha/hyprlandRPM), which demonstrates best practices for COPR repository management through GitHub Actions.
 
 ## Prerequisites
 
