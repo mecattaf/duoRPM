@@ -1,5 +1,5 @@
 Name:           fabric
-Version:        0.0.2
+Version:        0.0.1
 Release:        %autorelease
 Summary:        Next-generation framework for building desktop widgets using Python
 
