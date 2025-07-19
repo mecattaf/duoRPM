@@ -1,51 +1,47 @@
+%bcond_with check
+
 Name:           matugen
-Version:        0.13.0
+Version:        2.4.1
 Release:        %autorelease
-Summary:        Fast and simple wallpaper-based palette generator written in Rust
+Summary:        A material you color generation tool with templates
+License:        GPL-2.0-only
 
-License:        GPL-3.0-or-later
-URL:            https://github.com/InfernoEmbedded/matugen
-Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+URL:            https://github.com/InioX/matugen
+Source:         %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
-BuildRequires:  gcc
-BuildRequires:  rust
-BuildRequires:  cargo
-BuildRequires:  rust-packaging
+BuildRequires:  cargo-rpm-macros >= 24
 
-# Optional deps (if any native libs appear later in build)
-BuildRequires:  pkg-config
-BuildRequires:  clang
+%global _description %{expand:
+%{summary}.}
 
-Requires:       desktop-file-utils
-
-%description
-Matugen is a fast and simple wallpaper-based palette generator written in Rust. It can
-generate colorschemes from wallpapers or images and is compatible with various formats
-like Pywal, GTK themes, and more.
+%description %{_description}
 
 %prep
-%autosetup -n %{name}-%{version}
-%{__cargo} vendor
-
-mkdir -p .cargo
-cat > .cargo/config << EOF
-[source.crates-io]
-replace-with = "vendored-sources"
-
-[source.vendored-sources]
-directory = "vendor"
-EOF
+%autosetup -p1
+cargo vendor
+%cargo_prep -v vendor
 
 %build
-%{__cargo} build --release
+%cargo_build
+%{cargo_license_summary}
+%{cargo_license} > LICENSE.dependencies
+%{cargo_vendor_manifest}
 
 %install
-install -Dpm0755 target/release/%{name} %{buildroot}%{_bindir}/%{name}
+install -Dpm755 target/release/matugen %{buildroot}%{_bindir}/matugen
+
+%if %{with check}
+%check
+%cargo_test
+%endif
 
 %files
 %license LICENSE
+%license LICENSE.dependencies
+%license cargo-vendor.txt
+%doc CHANGELOG.md
 %doc README.md
-%{_bindir}/%{name}
+%{_bindir}/matugen
 
 %changelog
 %autochangelog
