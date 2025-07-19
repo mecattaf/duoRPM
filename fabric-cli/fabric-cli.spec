@@ -12,7 +12,7 @@
 
 # https://github.com/Fabric-Development/fabric-cli
 %global goipath         github.com/Fabric-Development/fabric-cli
-Version:        0.0.2
+Version:        null
 
 %gometa -L -f
 
