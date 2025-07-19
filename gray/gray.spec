@@ -1,5 +1,5 @@
 Name:           gray
-Version:        0.1.0
+Version:        null
 Release:        1%{?dist}
 Summary:        System trays for everyone - SNI protocol implementation library
 
@@ -75,6 +75,9 @@ developing applications that use %{name}.
 %{_datadir}/vala/vapi/Gray-0.1.vapi
 
 %changelog
+* Sat Jul 19 2025 Automated Build <builder@copr.fedoraproject.org> - null-1
+- Update to version null
+
 * Thu Jul 19 2025 Automated Build <builder@copr.fedoraproject.org> - 0.1.0-1
 - Initial package for Gray SNI implementation library
 %autochangelog
