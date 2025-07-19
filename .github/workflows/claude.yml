@@ -25,6 +25,4 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           custom_instructions: |
-            This is the smart-tiling project. Always read CLAUDE.md first.
-            Focus on the immediate success criteria: Neovim+terminal integration.
             Follow conventional commits and create focused, working code.
