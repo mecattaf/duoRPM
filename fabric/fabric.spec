@@ -18,7 +18,6 @@ BuildRequires:  python3-wheel
 BuildRequires:  gtk3-devel
 BuildRequires:  cairo-devel
 BuildRequires:  gtk-layer-shell-devel
-BuildRequires:  libgirepository-devel
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  webkit2gtk4.1-devel
 BuildRequires:  libdbusmenu-gtk3-devel

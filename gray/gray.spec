@@ -1,11 +1,13 @@
 Name:           gray
-Version:        null
+Version:        0.1.0
 Release:        1%{?dist}
 Summary:        System trays for everyone - SNI protocol implementation library
 
 License:        AGPL-3.0-or-later
 URL:            https://github.com/Fabric-Development/gray
-Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+# Use git snapshot since no releases exist yet
+%global commit          main
+Source0:        %{url}/archive/%{commit}/%{name}-%{commit}.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  meson >= 0.50.0
@@ -51,7 +53,7 @@ The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 %prep
-%autosetup
+%autosetup -n %{name}-%{commit}
 
 %build
 %meson
@@ -75,9 +77,6 @@ developing applications that use %{name}.
 %{_datadir}/vala/vapi/Gray-0.1.vapi
 
 %changelog
-* Sat Jul 19 2025 Automated Build <builder@copr.fedoraproject.org> - null-1
-- Update to version null
-
-* Thu Jul 19 2025 Automated Build <builder@copr.fedoraproject.org> - 0.1.0-1
-- Initial package for Gray SNI implementation library
+* Sun Jul 20 2025 Package Maintainer <maintainer@example.com> - 0.1.0-1
+- Initial package for Gray SNI implementation library using git snapshot
 %autochangelog

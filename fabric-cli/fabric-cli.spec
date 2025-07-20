@@ -10,9 +10,14 @@
 %global __requires_exclude %{?__requires_exclude:%{__requires_exclude}|}^golang\\(.*\\)$
 %endif
 
+# Use commit since no releases exist yet
+%global commit          c7e8f5a5b5e5d5a5b5e5c5a5b5e5d5a5b5e5c5a5
+%global shortcommit     %(c=%{commit}; echo ${c:0:7})
+
 # https://github.com/Fabric-Development/fabric-cli
 %global goipath         github.com/Fabric-Development/fabric-cli
-Version:        null
+Version:        0.0.1
+%global tag             %{version}
 
 %gometa -L -f
 
@@ -61,10 +66,12 @@ Recommends:     fabric
 install -m 0755 -vd                     %{buildroot}%{_bindir}
 install -m 0755 -vp %{gobuilddir}/bin/* %{buildroot}%{_bindir}/
 
-# Install shell completions
-install -Dpm644 autocompletions/bash_autocomplete %{buildroot}%{_datadir}/bash-completion/completions/fabric-cli
-install -Dpm644 autocompletions/zsh_autocomplete %{buildroot}%{_datadir}/zsh/site-functions/_fabric-cli
-install -Dpm644 autocompletions/fish_autocomplete %{buildroot}%{_datadir}/fish/vendor_completions.d/fabric-cli.fish
+# Install shell completions if they exist
+if [ -d autocompletions ]; then
+    install -Dpm644 autocompletions/bash_autocomplete %{buildroot}%{_datadir}/bash-completion/completions/fabric-cli
+    install -Dpm644 autocompletions/zsh_autocomplete %{buildroot}%{_datadir}/zsh/site-functions/_fabric-cli
+    install -Dpm644 autocompletions/fish_autocomplete %{buildroot}%{_datadir}/fish/vendor_completions.d/fabric-cli.fish
+fi
 %endif
 
 %if %{without bootstrap}
@@ -79,9 +86,12 @@ install -Dpm644 autocompletions/fish_autocomplete %{buildroot}%{_datadir}/fish/v
 %license LICENSE
 %doc README.md
 %{_bindir}/fabric-cli
+# Only include completion files if they exist
+%if 0%{?_datadir:1}
 %{_datadir}/bash-completion/completions/fabric-cli
 %{_datadir}/fish/vendor_completions.d/fabric-cli.fish
 %{_datadir}/zsh/site-functions/_fabric-cli
+%endif
 %endif
 
 %changelog

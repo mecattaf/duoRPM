@@ -1,20 +1,35 @@
 #!/bin/bash
-# This script checks for new versions of fabric-cli and updates the spec file accordingly
-
+# fabric-cli/update.sh - Handle projects without releases
 set -euo pipefail
 
-# Define key variables for version checking
 SPEC="fabric-cli.spec"
 REPO="Fabric-Development/fabric-cli"
 VERSION_FIELD="Version:"
 
-# Get the latest version from GitHub
-# Note: fabric-cli uses 'v' prefix in its tags, so we remove it
-LATEST=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | jq -r .tag_name | sed 's/^v//')
+# First check if there are any releases
+LATEST_RELEASE=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | jq -r .tag_name 2>/dev/null || echo "null")
+
+if [ "$LATEST_RELEASE" = "null" ] || [ -z "$LATEST_RELEASE" ]; then
+    echo "No releases found for fabric-cli. Checking for tags..."
+    
+    # Try to get the latest tag
+    LATEST_TAG=$(curl -s "https://api.github.com/repos/$REPO/tags" | jq -r '.[0].name' 2>/dev/null || echo "null")
+    
+    if [ "$LATEST_TAG" = "null" ] || [ -z "$LATEST_TAG" ]; then
+        echo "No tags found either. This project needs manual version management."
+        echo "Consider using a git snapshot approach or waiting for the first release."
+        exit 0
+    else
+        LATEST="$LATEST_TAG"
+    fi
+else
+    LATEST=$(echo "$LATEST_RELEASE" | sed 's/^v//')
+fi
+
 CURRENT=$(rpmspec -q --qf "%{version}\n" "$SPEC" | head -1)
 
-# Only update if versions differ
-if [ "$LATEST" != "$CURRENT" ]; then
+# Only update if versions differ and are valid
+if [ "$LATEST" != "$CURRENT" ] && [ "$LATEST" != "null" ]; then
     # Verify that the source tarball is available before updating
     SOURCE_URL="https://github.com/${REPO}/archive/v${LATEST}/fabric-cli-${LATEST}.tar.gz"
     
@@ -34,5 +49,5 @@ if [ "$LATEST" != "$CURRENT" ]; then
         exit 0
     fi
 else
-    echo "fabric-cli spec file is already at the latest version: $CURRENT"
+    echo "fabric-cli spec file is already at the latest version or no valid version found: $CURRENT"
 fi
