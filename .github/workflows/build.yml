@@ -65,31 +65,36 @@ jobs:
           cliphist_build_id=$(copr-cli build-package mecattaf/duoRPM --nowait --name cliphist | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
           echo "CLIPHIST_BUILD_ID=$cliphist_build_id" >> $GITHUB_ENV
 
-      # Build GCC packages (lisgd and scroll)
+      # Build GCC packages (lisgd, scroll, gray)
       - name: Build GCC packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-gcc]')
         run: |
           copr-cli build-package mecattaf/duoRPM --nowait --name lisgd
+          copr-cli build-package mecattaf/duoRPM --nowait --name gray
           copr-cli build-package mecattaf/duoRPM --nowait --name scroll --after-build-id "$WLROOTS_BUILD_ID"
 
-      # Build remaining Go packages (nwg-look) that depend on xcur2png
+      # Build remaining Go packages (nwg-look, fabric-cli) that depend on xcur2png
       - name: Build Go packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-go]')
         run: |
           # Build nwg-look after xcur2png
           copr-cli build-package mecattaf/duoRPM --nowait --name nwg-look --after-build-id "$XCUR2PNG_BUILD_ID"
+          # Build fabric-cli
+          copr-cli build-package mecattaf/duoRPM --nowait --name fabric-cli
 
-      # Build Rust package
-      - name: Build Rust package
+      # Build Rust packages
+      - name: Build Rust packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-rust]')
         run: |
           copr-cli build-package mecattaf/duoRPM --nowait --name wl-gammarelay-rs
+          copr-cli build-package mecattaf/duoRPM --nowait --name matugen
 
       # Build Python packages with dependencies
       - name: Build Python packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-python]')
         run: |
           copr-cli build-package mecattaf/duoRPM --nowait --name python-autotiling
+          copr-cli build-package mecattaf/duoRPM --nowait --name fabric
           copr-cli build-package mecattaf/duoRPM --nowait --name nwg-clipman --after-build-id "$CLIPHIST_BUILD_ID"
 
       # Build theme packages
@@ -99,7 +104,7 @@ jobs:
           parallel copr-cli build-package mecattaf/duoRPM --nowait --name ::: \
             bibata-cursor-themes
 
-      # Build prebuilt packages (atuin, eza, starship)
+      # Build prebuilt packages (atuin, eza, starship, iwmenu, backlog)
       - name: Build prebuilt packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-prebuilt]')
         run: |

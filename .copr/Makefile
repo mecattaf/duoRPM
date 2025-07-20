@@ -34,15 +34,15 @@ prebuiltprep: prepare
 
 prebuild:
 	@buildtype="unknown"; \
-	if grep -q "Name:.*wl-gammarelay-rs" "$(SPECFILE)"; then \
+	if grep -q "Name:.*wl-gammarelay-rs\|Name:.*matugen" "$(SPECFILE)"; then \
 		buildtype="rust"; \
-	elif grep -q "Name:.*cliphist\|Name:.*nwg-look\|Name:.*xcur2png" "$(SPECFILE)"; then \
+	elif grep -q "Name:.*cliphist\|Name:.*nwg-look\|Name:.*xcur2png\|Name:.*fabric-cli" "$(SPECFILE)"; then \
 		buildtype="go"; \
-	elif grep -q "Name:.*python-\|Name:.*nwg-clipman" "$(SPECFILE)"; then \
+	elif grep -q "Name:.*python-\|Name:.*nwg-clipman\|Name:.*fabric" "$(SPECFILE)"; then \
 		buildtype="python"; \
 	elif grep -q "Name:.*bibata-cursor-themes" "$(SPECFILE)"; then \
 		buildtype="theme"; \
-	elif grep -q "Name:.*lisgd\|Name:.*scroll\|Name:.*wlroots\|Name:.*wayland" "$(SPECFILE)"; then \
+	elif grep -q "Name:.*lisgd\|Name:.*scroll\|Name:.*wlroots\|Name:.*wayland\|Name:.*gray" "$(SPECFILE)"; then \
 		buildtype="gcc"; \
 	elif grep -q "Name:.*atuin\|Name:.*eza\|Name:.*starship\|Name:.*iwmenu\|Name:.*backlog" "$(SPECFILE)"; then \
 		buildtype="prebuilt"; \
