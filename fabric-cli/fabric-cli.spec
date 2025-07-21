@@ -10,14 +10,14 @@
 %global __requires_exclude %{?__requires_exclude:%{__requires_exclude}|}^golang\\(.*\\)$
 %endif
 
-# Use commit since no releases exist yet
-%global commit          c7e8f5a5b5e5d5a5b5e5c5a5b5e5d5a5b5e5c5a5
+# Use git snapshot since no releases exist yet
+%global commit          ed7da8aeed726abb9cb0603efa83b693b91d3159
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
+%global snapdate        20250121
 
 # https://github.com/Fabric-Development/fabric-cli
 %global goipath         github.com/Fabric-Development/fabric-cli
-Version:        0.0.1
-%global tag             %{version}
+Version:        0.0.1~git%{snapdate}.%{shortcommit}
 
 %gometa -L -f
 
@@ -34,8 +34,9 @@ Summary:        Alternative high-performance CLI utility for Fabric
 
 License:        AGPL-3.0-or-later
 URL:            %{gourl}
-Source:         %{gosource}
-Source:         bundle_go_deps_for_rpm.sh
+# Use master branch snapshot since no releases exist
+Source:         %{url}/archive/%{commit}/%{name}-%{commit}.tar.gz
+Source1:        bundle_go_deps_for_rpm.sh
 
 BuildRequires:  meson
 BuildRequires:  ninja-build
@@ -46,9 +47,8 @@ Recommends:     fabric
 
 %description %{common_description}
 
-
 %prep
-%goprep -A
+%autosetup -n %{name}-%{commit}
 %autopatch -p1
 
 %if %{without bootstrap}
@@ -87,9 +87,13 @@ fi
 %doc README.md
 %{_bindir}/fabric-cli
 # Only include completion files if they exist
-%if 0%{?_datadir:1}
+%if 0%{?bash_completions_dir:1}
 %{_datadir}/bash-completion/completions/fabric-cli
+%endif
+%if 0%{?fish_completions_dir:1}
 %{_datadir}/fish/vendor_completions.d/fabric-cli.fish
+%endif
+%if 0%{?zsh_completions_dir:1}
 %{_datadir}/zsh/site-functions/_fabric-cli
 %endif
 %endif

@@ -7,29 +7,16 @@ SPEC="fabric.spec"
 REPO="Fabric-Development/fabric"
 VERSION_FIELD="Version:"
 
-# Get the latest version from GitHub releases or tags
-# Since Fabric doesn't seem to have formal releases yet, we'll check the default.nix for version
-LATEST_TAG=$(curl -s "https://api.github.com/repos/$REPO/tags" | jq -r '.[0].name' | sed 's/^v//')
-
-# Try to get version from default.nix if no tags
-if [ "$LATEST_TAG" = "null" ] || [ -z "$LATEST_TAG" ]; then
-    # Fetch the default.nix file and extract version
-    LATEST=$(curl -s "https://raw.githubusercontent.com/$REPO/master/default.nix" | grep -E 'version = "' | sed 's/.*version = "//;s/";.*//' | head -1)
-    if [ -z "$LATEST" ]; then
-        LATEST="0.0.2"  # fallback to current version in nix file
-    fi
-else
-    LATEST="$LATEST_TAG"
-fi
-
+# Get the latest version from GitHub releases
+LATEST=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | jq -r .tag_name | sed 's/^v//')
 CURRENT=$(rpmspec -q --qf "%{version}\n" "$SPEC" | head -1)
 
 # Check if versions differ
 if [ "$LATEST" != "$CURRENT" ]; then
     # Verify that the source is available before updating
-    SOURCE_URL="https://github.com/${REPO}/archive/refs/heads/master.tar.gz"
+    SOURCE_URL="https://github.com/${REPO}/archive/v${LATEST}/${REPO##*/}-${LATEST}.tar.gz"
     
-    # Check if source exists (master branch should always exist)
+    # Check if source exists (release tarball should exist)
     if curl --output /dev/null --silent --head --fail "$SOURCE_URL"; then
         
         # Update the spec file version

@@ -1,12 +1,14 @@
+%global snapdate        20250121
+%global commit          d5a8452c39b074ef6da25be95305a22203cf230e
+
 Name:           gray
-Version:        null
+Version:        0.1.0~git%{snapdate}
 Release:        1%{?dist}
 Summary:        System trays for everyone - SNI protocol implementation library
 
 License:        AGPL-3.0-or-later
 URL:            https://github.com/Fabric-Development/gray
 # Use git snapshot since no releases exist yet
-%global commit          main
 Source0:        %{url}/archive/%{commit}/%{name}-%{commit}.tar.gz
 
 BuildRequires:  gcc
@@ -56,16 +58,22 @@ developing applications that use %{name}.
 %autosetup -n %{name}-%{commit}
 
 %build
-%meson
+%meson \
+    -Dexamples=true \
+    -Dintrospection=enabled \
+    -Dvapi=enabled
 %meson_build
 
 %install
 %meson_install
 
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
 %files
 %license LICENSE
 %doc README.md
-%{_libdir}/libgray.so.*
+%{_libdir}/libgray.so.0*
 %{_libdir}/girepository-1.0/Gray-0.1.typelib
 
 %files devel
@@ -77,9 +85,7 @@ developing applications that use %{name}.
 %{_datadir}/vala/vapi/Gray-0.1.vapi
 
 %changelog
-* Sun Jul 20 2025 Automated Build <builder@copr.fedoraproject.org> - null-1
-- Update to version null
-
-* Sun Jul 20 2025 Package Maintainer <maintainer@example.com> - 0.1.0-1
+* Mon Jul 21 2025 Package Maintainer <maintainer@example.com> - 0.1.0~git20250101-1
 - Initial package for Gray SNI implementation library using git snapshot
-%autochangelog
+- Use meson build system with proper configuration
+- Enable introspection and vala bindings

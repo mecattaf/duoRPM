@@ -5,7 +5,7 @@ Summary:        Next-generation framework for building desktop widgets using Pyt
 
 License:        AGPL-3.0-or-later
 URL:            https://github.com/Fabric-Development/fabric
-Source0:        %{url}/archive/refs/heads/master.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 
@@ -63,7 +63,7 @@ Key features:
 - Built-in Python code replaces the need for resource-heavy shell scripts
 
 %prep
-%autosetup -n fabric-master
+%autosetup -n %{name}-%{version}
 
 %build
 %py3_build
@@ -73,25 +73,27 @@ Key features:
 
 # Install example configurations
 mkdir -p %{buildroot}%{_datadir}/%{name}/examples
-cp -r examples/* %{buildroot}%{_datadir}/%{name}/examples/
+if [ -d examples ]; then
+    cp -r examples/* %{buildroot}%{_datadir}/%{name}/examples/
+fi
 
 # Install documentation
 mkdir -p %{buildroot}%{_docdir}/%{name}
 cp README.md %{buildroot}%{_docdir}/%{name}/
-cp CHANGELOG.md %{buildroot}%{_docdir}/%{name}/ 2>/dev/null || true
+if [ -f CHANGELOG.md ]; then
+    cp CHANGELOG.md %{buildroot}%{_docdir}/%{name}/
+fi
 
 %files
 %license LICENSE
 %doc %{_docdir}/%{name}/README.md
+%if 0%{?_docdir}
 %doc %{_docdir}/%{name}/CHANGELOG.md
+%endif
 %{_bindir}/fabric
 %{python3_sitelib}/fabric/
 %{python3_sitelib}/fabric-*.egg-info/
 %{_datadir}/%{name}/examples/
 
 %changelog
-* %{?date:%{date}}%{!?date:%(date +"%%a %%b %%d %%Y")} Package Maintainer <maintainer@example.com> - 0.0.2-1
-- Initial RPM package for Fabric
-- Includes all core dependencies and example configurations
-- Supports both X11 and Wayland environments
 %autochangelog
