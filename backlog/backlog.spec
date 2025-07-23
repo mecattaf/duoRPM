@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           backlog
-Version:        1.5.2
+Version:        1.5.5
 Release:        %autorelease
 Summary:        Markdown-native Task Manager & Kanban visualizer for any Git repository
 
