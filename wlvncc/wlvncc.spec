@@ -64,6 +64,8 @@ Features:
 %autosetup -n %{name}-%{commit}
 # Extract and setup bundled aml as subproject
 tar -xf %{SOURCE1}
+# Create subprojects directory if it doesn't exist
+mkdir -p subprojects
 mv aml-%{aml_version} subprojects/aml
 
 %build
