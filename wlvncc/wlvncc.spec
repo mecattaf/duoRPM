@@ -3,6 +3,9 @@
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 %global snapdate        20240727
 
+# aml version needed for bundling
+%global aml_version     1.0.0
+
 Name:           wlvncc
 Version:        0.1.0~git%{snapdate}.%{shortcommit}
 Release:        1%{?dist}
@@ -12,11 +15,12 @@ License:        ISC
 URL:            https://github.com/any1/wlvncc
 # Use git snapshot since no releases exist yet
 Source0:        https://github.com/any1/wlvncc/archive/%{commit}/%{name}-%{commit}.tar.gz
+# Bundle aml v1.0.0 since it's not available in Fedora repos yet
+Source1:        https://github.com/any1/aml/archive/refs/tags/v%{aml_version}/aml-%{aml_version}.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  meson >= 0.50.0
 BuildRequires:  ninja-build
-BuildRequires:  pkgconfig(aml)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(gbm)
@@ -58,6 +62,9 @@ Features:
 
 %prep
 %autosetup -n %{name}-%{commit}
+# Extract and setup bundled aml as subproject
+tar -xf %{SOURCE1}
+mv aml-%{aml_version} subprojects/aml
 
 %build
 %meson
