@@ -60,8 +60,7 @@ Features:
 %autosetup -n %{name}-%{commit}
 
 %build
-%meson \
-    -Dexamples=false
+%meson
 %meson_build
 
 %install
@@ -73,6 +72,6 @@ Features:
 %{_bindir}/%{name}
 
 %changelog
-* Wed Jul 27 2024 Automated Build <builder@copr.fedoraproject.org> - 0.1.0~git20240727.860232f-1
+* Sat Aug 16 2025 Automated Build <builder@copr.fedoraproject.org> - 0.1.0~git20240727.860232f-1
 - Initial package for wlvncc using git snapshot from July 27, 2024
 - Wayland native VNC client with hardware acceleration support
