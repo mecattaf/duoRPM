@@ -13,7 +13,7 @@ Before starting, ensure you have:
 - A Fedora account (for COPR)
 - Basic knowledge of RPM packaging
 - A GitHub account
-- Your RPM spec files ready (you can use tools like rust2rpm, pyp2rpm, gem2rpm, gofed, or npm2rpm to help create these)
+- Your RPM spec files ready (you can use tools like rust2rpm, pyp2rpm, gem2rpm, gofed, or npm2rpm to help create these) - or an LLM
 
 ## Setting Up COPR Authentication
 
