@@ -17,6 +17,8 @@ URL:            https://github.com/any1/wlvncc
 Source0:        https://github.com/any1/wlvncc/archive/%{commit}/%{name}-%{commit}.tar.gz
 # Bundle aml v1.0.0 since it's not available in Fedora repos yet
 Source1:        https://github.com/any1/aml/archive/refs/tags/v%{aml_version}/aml-%{aml_version}.tar.gz
+# Bundle minilzo 2.10 for LZO compression support
+Source2:        http://www.oberhumer.com/opensource/lzo/download/minilzo-2.10.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  meson >= 0.50.0
@@ -40,8 +42,6 @@ BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libsasl2)
 BuildRequires:  pkgconfig(zlib)
-# Note: lzo2 might not be available, making it optional
-%{?_with_lzo:BuildRequires: pkgconfig(lzo2)}
 
 Requires:       wayland
 Requires:       mesa-dri-drivers
@@ -68,6 +68,15 @@ tar -xf %{SOURCE1}
 mkdir -p subprojects
 mv aml-%{aml_version} subprojects/aml
 
+# Extract minilzo and copy the needed files to src/encodings
+tar -xf %{SOURCE2}
+# Copy minilzo files to where the build system expects them
+cp minilzo-2.10/minilzo.{c,h} src/encodings/
+# Also copy lzoconf.h if it exists
+if [ -f minilzo-2.10/lzoconf.h ]; then
+    cp minilzo-2.10/lzoconf.h src/encodings/
+fi
+
 %build
 %meson
 %meson_build
@@ -84,3 +93,4 @@ mv aml-%{aml_version} subprojects/aml
 * Sat Aug 16 2025 Automated Build <builder@copr.fedoraproject.org> - 0.1.0~git20240727.860232f-1
 - Initial package for wlvncc using git snapshot from July 27, 2024
 - Wayland native VNC client with hardware acceleration support
+- Bundle minilzo for LZO compression support
