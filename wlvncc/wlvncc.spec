@@ -18,6 +18,9 @@ Source0:        https://github.com/any1/wlvncc/archive/%{commit}/%{name}-%{commi
 # Bundle aml v1.0.0 since it's not available in Fedora repos yet
 Source1:        https://github.com/any1/aml/archive/refs/tags/v%{aml_version}/aml-%{aml_version}.tar.gz
 
+# Patch to use system LZO instead of bundled minilzo
+Patch0:         wlvncc-use-system-lzo.patch
+
 BuildRequires:  gcc
 BuildRequires:  meson >= 0.50.0
 BuildRequires:  ninja-build
@@ -66,26 +69,12 @@ Features:
 - Multiple pixel formats
 
 %prep
-%autosetup -n %{name}-%{commit}
+%autosetup -n %{name}-%{commit} -p1
 # Extract and setup bundled aml as subproject
 tar -xf %{SOURCE1}
 # Create subprojects directory if it doesn't exist
 mkdir -p subprojects
 mv aml-%{aml_version} subprojects/aml
-
-# Create a dummy minilzo.h that redirects to system LZO
-cat > src/encodings/minilzo.h << 'EOF'
-/* Redirect to system LZO */
-#ifndef MINILZO_H
-#define MINILZO_H
-#include <lzo/lzo1x.h>
-#include <lzo/lzoconf.h>
-#define lzo_init() (LZO_E_OK)
-#endif
-EOF
-
-# Create empty lzodefs.h to satisfy includes
-touch src/encodings/lzodefs.h
 
 %build
 %meson
@@ -103,4 +92,4 @@ touch src/encodings/lzodefs.h
 * Sat Aug 16 2025 Automated Build <builder@copr.fedoraproject.org> - 0.1.0~git20240727.860232f-1
 - Initial package for wlvncc using git snapshot from July 27, 2024
 - Wayland native VNC client with hardware acceleration support
-- Use system LZO library for compression support
+- Patch to use system LZO library instead of bundled minilzo
