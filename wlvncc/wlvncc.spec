@@ -16,8 +16,8 @@ Source0:        https://github.com/any1/wlvncc/archive/%{commit}/%{name}-%{commi
 BuildRequires:  gcc
 BuildRequires:  meson >= 0.50.0
 BuildRequires:  ninja-build
-BuildRequires:  pkgconfig(aml1)
-BuildRequires:  pkgconfig(drm)
+BuildRequires:  pkgconfig(aml)
+BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(gbm)
 BuildRequires:  pkgconfig(glesv2)
@@ -36,7 +36,8 @@ BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libsasl2)
 BuildRequires:  pkgconfig(zlib)
-BuildRequires:  pkgconfig(lzo2)
+# Note: lzo2 might not be available, making it optional
+%{?_with_lzo:BuildRequires: pkgconfig(lzo2)}
 
 Requires:       wayland
 Requires:       mesa-dri-drivers
@@ -57,10 +58,6 @@ Features:
 
 %prep
 %autosetup -n %{name}-%{commit}
-
-# Create aml subproject directory and symlink
-mkdir -p subprojects
-# For COPR builds, aml will be available as system dependency
 
 %build
 %meson \
