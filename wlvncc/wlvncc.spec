@@ -11,14 +11,14 @@ Version:        0.1.0~git%{snapdate}.%{shortcommit}
 Release:        1%{?dist}
 Summary:        Wayland native VNC client
 
-License:        ISC
+License:        ISC and GPL-2.0-or-later
 URL:            https://github.com/any1/wlvncc
 # Use git snapshot since no releases exist yet
 Source0:        https://github.com/any1/wlvncc/archive/%{commit}/%{name}-%{commit}.tar.gz
 # Bundle aml v1.0.0 since it's not available in Fedora repos yet
 Source1:        https://github.com/any1/aml/archive/refs/tags/v%{aml_version}/aml-%{aml_version}.tar.gz
-# Bundle minilzo 2.10 for LZO compression support
-Source2:        http://www.oberhumer.com/opensource/lzo/download/minilzo-2.10.tar.gz
+# Get minilzo from the full LZO source (minilzo is part of it)
+Source2:        http://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  meson >= 0.50.0
@@ -46,6 +46,10 @@ BuildRequires:  pkgconfig(zlib)
 Requires:       wayland
 Requires:       mesa-dri-drivers
 
+# Bundled libraries
+Provides:       bundled(aml) = %{aml_version}
+Provides:       bundled(minilzo) = 2.10
+
 %description
 This is a work-in-progress implementation of a Wayland native VNC client.
 Expect bugs and missing features.
@@ -68,14 +72,22 @@ tar -xf %{SOURCE1}
 mkdir -p subprojects
 mv aml-%{aml_version} subprojects/aml
 
-# Extract minilzo and copy the needed files to src/encodings
+# Extract LZO and copy minilzo files
 tar -xf %{SOURCE2}
-# Copy minilzo files to where the build system expects them
-cp minilzo-2.10/minilzo.{c,h} src/encodings/
-# Also copy lzoconf.h if it exists
-if [ -f minilzo-2.10/lzoconf.h ]; then
-    cp minilzo-2.10/lzoconf.h src/encodings/
-fi
+# Copy minilzo files from the full LZO distribution
+cp lzo-2.10/minilzo/minilzo.c src/encodings/
+cp lzo-2.10/minilzo/minilzo.h src/encodings/
+# Copy required header files that minilzo depends on
+cp lzo-2.10/include/lzo/lzoconf.h src/encodings/
+cp lzo-2.10/include/lzo/lzodefs.h src/encodings/
+# If there are any other required headers, copy them too
+for header in lzoutil.h lzo1x.h; do
+    [ -f "lzo-2.10/include/lzo/$header" ] && cp "lzo-2.10/include/lzo/$header" src/encodings/
+done
+
+# Fix include paths in the copied files to use local versions
+sed -i 's|#include "lzo/|#include "|g' src/encodings/*.h 2>/dev/null || true
+sed -i 's|#include <lzo/|#include "|g' src/encodings/*.h 2>/dev/null || true
 
 %build
 %meson
@@ -93,4 +105,4 @@ fi
 * Sat Aug 16 2025 Automated Build <builder@copr.fedoraproject.org> - 0.1.0~git20240727.860232f-1
 - Initial package for wlvncc using git snapshot from July 27, 2024
 - Wayland native VNC client with hardware acceleration support
-- Bundle minilzo for LZO compression support
+- Bundle minilzo from LZO 2.10 for compression support
