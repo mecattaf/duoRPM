@@ -71,8 +71,9 @@ jobs:
         run: |
           copr-cli build-package mecattaf/duoRPM --nowait --name lisgd
           copr-cli build-package mecattaf/duoRPM --nowait --name gray
+          copr-cli build-package mecattaf/duoRPM --nowait --name wlvncc
           copr-cli build-package mecattaf/duoRPM --nowait --name scroll --after-build-id "$WLROOTS_BUILD_ID"
-
+    
       # Build remaining Go packages (nwg-look, fabric-cli) that depend on xcur2png
       - name: Build Go packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-go]')

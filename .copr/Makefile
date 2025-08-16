@@ -42,7 +42,7 @@ prebuild:
 		buildtype="python"; \
 	elif grep -q "Name:.*bibata-cursor-themes" "$(SPECFILE)"; then \
 		buildtype="theme"; \
-	elif grep -q "Name:.*lisgd\|Name:.*scroll\|Name:.*wlroots\|Name:.*wayland\|Name:.*gray" "$(SPECFILE)"; then \
+	elif grep -q "Name:.*lisgd\|Name:.*scroll\|Name:.*wlroots\|Name:.*wayland\|Name:.*gray\|Name:.*wlvncc" "$(SPECFILE)"; then \
 		buildtype="gcc"; \
 	elif grep -q "Name:.*atuin\|Name:.*eza\|Name:.*starship\|Name:.*iwmenu\|Name:.*backlog" "$(SPECFILE)"; then \
 		buildtype="prebuilt"; \
