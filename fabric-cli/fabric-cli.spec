@@ -11,9 +11,9 @@
 %endif
 
 # Use git snapshot since no releases exist yet
-%global commit          ed7da8aeed726abb9cb0603efa83b693b91d3159
+%global commit          d51c789b8fd1d5f00492464bdc4463aa37c256da
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
-%global snapdate        20250121
+%global snapdate        20250821
 
 # https://github.com/Fabric-Development/fabric-cli
 %global goipath         github.com/Fabric-Development/fabric-cli
