@@ -19,7 +19,8 @@ jobs:
       contains(github.event.head_commit.message, '[build-gcc]') ||
       contains(github.event.head_commit.message, '[build-themes]') ||
       contains(github.event.head_commit.message, '[build-prebuilt]') ||
-      contains(github.event.head_commit.message, '[build-wayland]')
+      contains(github.event.head_commit.message, '[build-wayland]') ||
+      contains(github.event.head_commit.message, '[build-bun]')
     runs-on: ubuntu-latest
     container:
       image: 'registry.fedoraproject.org/fedora-minimal:latest'
@@ -112,6 +113,12 @@ jobs:
           copr-cli build-package mecattaf/duoRPM --nowait --name starship
           copr-cli build-package mecattaf/duoRPM --nowait --name iwmenu
           copr-cli build-package mecattaf/duoRPM --nowait --name backlog
+
+      # Build Bun packages (backlog-test built from source)
+      - name: Build Bun packages
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-bun]')
+        run: |
+          copr-cli build-package mecattaf/duoRPM --nowait --name backlog-test
 
       # Check build status (fixed version)
       - name: Check build status

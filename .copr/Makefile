@@ -1,4 +1,4 @@
-.PHONY: prepare goprep rustprep pythonprep themesprep gccprep prebuiltprep srpm prebuild
+.PHONY: prepare goprep rustprep pythonprep themesprep gccprep prebuiltprep bunprep srpm prebuild
 
 # Define variables
 BUILDDIR := $(shell pwd)
@@ -32,6 +32,10 @@ prebuiltprep: prepare
 	# No special preparation needed for prebuilt binaries
 	dnf install --nodocs -y tar gzip xz
 
+bunprep: prepare
+	# Preparation for building Bun applications from source
+	dnf install --nodocs -y gcc-c++ libstdc++-devel glibc-devel curl git-core
+
 prebuild:
 	@buildtype="unknown"; \
 	if grep -q "Name:.*wl-gammarelay-rs\|Name:.*matugen" "$(SPECFILE)"; then \
@@ -44,6 +48,8 @@ prebuild:
 		buildtype="theme"; \
 	elif grep -q "Name:.*lisgd\|Name:.*scroll\|Name:.*wlroots\|Name:.*wayland\|Name:.*gray\|Name:.*wlvncc" "$(SPECFILE)"; then \
 		buildtype="gcc"; \
+	elif grep -q "Name:.*backlog-test" "$(SPECFILE)"; then \
+		buildtype="bun"; \
 	elif grep -q "Name:.*atuin\|Name:.*eza\|Name:.*starship\|Name:.*iwmenu\|Name:.*backlog" "$(SPECFILE)"; then \
 		buildtype="prebuilt"; \
 	fi; \
@@ -53,6 +59,7 @@ prebuild:
 		"python") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) pythonprep;; \
 		"theme") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) themesprep;; \
 		"gcc") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) gccprep;; \
+		"bun") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) bunprep;; \
 		"prebuilt") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) prebuiltprep;; \
 		*) echo "Unknown package type in $(SPECFILE)"; exit 1;; \
 	esac
