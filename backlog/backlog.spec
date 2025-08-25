@@ -42,22 +42,34 @@ cp %{SOURCE3} ./LICENSE
 # Binary release, nothing to build
 
 %install
-mkdir -p %{buildroot}%{_bindir}
+# Install the actual binary to libexec (not directly accessible)
+mkdir -p %{buildroot}%{_libexecdir}/backlog
 
 %ifarch x86_64
-install -m755 %{SOURCE0} %{buildroot}%{_bindir}/backlog
+install -m755 %{SOURCE0} %{buildroot}%{_libexecdir}/backlog/backlog-bin
 %endif
 
 %ifarch aarch64
-install -m755 %{SOURCE1} %{buildroot}%{_bindir}/backlog
+install -m755 %{SOURCE1} %{buildroot}%{_libexecdir}/backlog/backlog-bin
 %endif
 
-# No shell completions are provided by backlog CLI
+# Create a wrapper script that ensures BUN_BE_BUN is unset
+mkdir -p %{buildroot}%{_bindir}
+cat > %{buildroot}%{_bindir}/backlog << 'EOF'
+#!/bin/sh
+# Wrapper script to ensure backlog runs correctly
+# Unset BUN_BE_BUN to prevent the binary from acting as the Bun CLI
+unset BUN_BE_BUN
+exec %{_libexecdir}/backlog/backlog-bin "$@"
+EOF
+chmod 755 %{buildroot}%{_bindir}/backlog
 
 %files
 %license LICENSE
 %doc README.md
 %{_bindir}/backlog
+%dir %{_libexecdir}/backlog
+%{_libexecdir}/backlog/backlog-bin
 
 %changelog
 %autochangelog
