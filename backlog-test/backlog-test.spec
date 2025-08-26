@@ -58,9 +58,9 @@ bun --version
 export HUSKY=0
 export CI=true
 
-# Install dependencies (production only)
-# The --ignore-scripts flag will also prevent husky from running
-bun install --production --frozen-lockfile --ignore-scripts
+# Install ALL dependencies (including devDependencies) for the build process
+# We need devDependencies because tailwindcss is required for building
+bun install --frozen-lockfile --ignore-scripts
 
 # Build CSS first (required step from their build process)
 bun run build:css
