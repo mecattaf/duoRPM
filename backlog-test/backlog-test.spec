@@ -54,8 +54,13 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # Verify Bun installation
 bun --version
 
+# Disable Husky git hooks that are failing in the build environment
+export HUSKY=0
+export CI=true
+
 # Install dependencies (production only)
-bun install --production --frozen-lockfile
+# The --ignore-scripts flag will also prevent husky from running
+bun install --production --frozen-lockfile --ignore-scripts
 
 # Build CSS first (required step from their build process)
 bun run build:css
