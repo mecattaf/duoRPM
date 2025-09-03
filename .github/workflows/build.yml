@@ -19,8 +19,7 @@ jobs:
       contains(github.event.head_commit.message, '[build-gcc]') ||
       contains(github.event.head_commit.message, '[build-themes]') ||
       contains(github.event.head_commit.message, '[build-prebuilt]') ||
-      contains(github.event.head_commit.message, '[build-wayland]') ||
-      contains(github.event.head_commit.message, '[build-bun]')
+      contains(github.event.head_commit.message, '[build-wayland]')
     runs-on: ubuntu-latest
     container:
       image: 'registry.fedoraproject.org/fedora-minimal:latest'
@@ -66,12 +65,11 @@ jobs:
           cliphist_build_id=$(copr-cli build-package mecattaf/duoRPM --nowait --name cliphist | grep -o 'builds: [0-9]*' | cut -d' ' -f2)
           echo "CLIPHIST_BUILD_ID=$cliphist_build_id" >> $GITHUB_ENV
 
-      # Build GCC packages (lisgd, scroll, wlvncc)
+      # Build GCC packages (lisgd, scroll)
       - name: Build GCC packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-gcc]')
         run: |
           copr-cli build-package mecattaf/duoRPM --nowait --name lisgd
-          copr-cli build-package mecattaf/duoRPM --nowait --name wlvncc
           copr-cli build-package mecattaf/duoRPM --nowait --name scroll --after-build-id "$WLROOTS_BUILD_ID"
     
       # Build remaining Go packages (nwg-look) that depend on xcur2png
@@ -103,7 +101,7 @@ jobs:
           parallel copr-cli build-package mecattaf/duoRPM --nowait --name ::: \
             bibata-cursor-themes
 
-      # Build prebuilt packages (atuin, eza, starship, iwmenu, backlog)
+      # Build prebuilt packages (atuin, eza, starship, iwmenu)
       - name: Build prebuilt packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-prebuilt]')
         run: |
@@ -112,13 +110,6 @@ jobs:
           copr-cli build-package mecattaf/duoRPM --nowait --name eza
           copr-cli build-package mecattaf/duoRPM --nowait --name starship
           copr-cli build-package mecattaf/duoRPM --nowait --name iwmenu
-          copr-cli build-package mecattaf/duoRPM --nowait --name backlog
-
-      # Build Bun packages (backlog-test built from source)
-      - name: Build Bun packages
-        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-bun]')
-        run: |
-          copr-cli build-package mecattaf/duoRPM --nowait --name backlog-test
 
       # Check build status (fixed version)
       - name: Check build status

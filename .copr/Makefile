@@ -32,25 +32,19 @@ prebuiltprep: prepare
 	# No special preparation needed for prebuilt binaries
 	dnf install --nodocs -y tar gzip xz
 
-bunprep: prepare
-	# Preparation for building Bun applications from source
-	dnf install --nodocs -y gcc-c++ libstdc++-devel glibc-devel curl git-core
-
 prebuild:
 	@buildtype="unknown"; \
 	if grep -q "Name:.*wl-gammarelay-rs\|Name:.*matugen" "$(SPECFILE)"; then \
 		buildtype="rust"; \
-	elif grep -q "Name:.*cliphist\|Name:.*nwg-look\|Name:.*xcur2png\|Name:.*fabric-cli" "$(SPECFILE)"; then \
+	elif grep -q "Name:.*cliphist\|Name:.*nwg-look\|Name:.*xcur2png" "$(SPECFILE)"; then \
 		buildtype="go"; \
-	elif grep -q "Name:.*python-\|Name:.*nwg-clipman\|Name:.*fabric\|Name:.*uwsm" "$(SPECFILE)"; then \
+	elif grep -q "Name:.*python-\|Name:.*nwg-clipman\|Name:.*uwsm" "$(SPECFILE)"; then \
 		buildtype="python"; \
 	elif grep -q "Name:.*bibata-cursor-themes" "$(SPECFILE)"; then \
 		buildtype="theme"; \
-	elif grep -q "Name:.*lisgd\|Name:.*scroll\|Name:.*wlroots\|Name:.*wayland\|Name:.*gray\|Name:.*wlvncc" "$(SPECFILE)"; then \
+	elif grep -q "Name:.*lisgd\|Name:.*scroll\|Name:.*wayland\|Name:.*wlroots" "$(SPECFILE)"; then \
 		buildtype="gcc"; \
-	elif grep -q "Name:.*backlog-test" "$(SPECFILE)"; then \
-		buildtype="bun"; \
-	elif grep -q "Name:.*atuin\|Name:.*eza\|Name:.*starship\|Name:.*iwmenu\|Name:.*backlog" "$(SPECFILE)"; then \
+	elif grep -q "Name:.*atuin\|Name:.*eza\|Name:.*starship\|Name:.*iwmenu" "$(SPECFILE)"; then \
 		buildtype="prebuilt"; \
 	fi; \
 	case $$buildtype in \
@@ -59,7 +53,6 @@ prebuild:
 		"python") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) pythonprep;; \
 		"theme") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) themesprep;; \
 		"gcc") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) gccprep;; \
-		"bun") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) bunprep;; \
 		"prebuilt") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) prebuiltprep;; \
 		*) echo "Unknown package type in $(SPECFILE)"; exit 1;; \
 	esac
