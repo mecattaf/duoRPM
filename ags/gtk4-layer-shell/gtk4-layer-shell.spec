@@ -1,6 +1,14 @@
+# Disable tests on s390x arch
+#   * integration-test-menu-popup FAIL
+%ifnarch s390x
+%bcond_without check
+%else
+%bcond_with check
+%endif
+
 Name:           gtk4-layer-shell
 Version:        1.2.0
-Release:        1%{?dist}
+Release:        %autorelease
 Summary:        Library to create panels and other desktop components for Wayland
 
 License:        MIT
@@ -8,17 +16,28 @@ URL:            https://github.com/wmww/gtk4-layer-shell
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires:  gcc
-BuildRequires:  meson >= 0.45.1
+BuildRequires:  meson >= 0.54.0
+BuildRequires:  vala
+BuildRequires:  pkgconfig(gobject-introspection-1.0)
 BuildRequires:  pkgconfig(gtk4)
 BuildRequires:  pkgconfig(wayland-client) >= 1.10.0
 BuildRequires:  pkgconfig(wayland-protocols) >= 1.16
-BuildRequires:  pkgconfig(wayland-scanner)
-BuildRequires:  gobject-introspection-devel
-BuildRequires:  vala
+BuildRequires:  pkgconfig(wayland-scanner) >= 1.10.0
+BuildRequires:  pkgconfig(wayland-server) >= 1.10.0
+%if %{with check}
+BuildRequires:  python3-gobject
+### For smoke tests
+# BuildRequires:  luarocks
+# BuildRequires:  pkgconfig(luajit)
+%endif
 
 %description
 A library for using the Layer Shell Wayland protocol with GTK4. With this
-library you can build desktop panels, launchers, and other such overlays.
+library you can build desktop shell components such as panels, notifications
+and wallpapers. You can use it to anchor your windows to a corner or edge of
+the output, or stretch them across the entire output. This Library is
+compatible with C, C++ and any language that supports GObject introspection
+files (Python, Vala, etc).
 
 %package        devel
 Summary:        Development files for %{name}
@@ -28,34 +47,52 @@ Requires:       %{name}%{?_isa} = %{version}-%{release}
 Development files for %{name}.
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
+# Disable smoke tests since they introduce two problems:
+#   1. They need the examples which will be installed and check-files fails with
+#      the error 'Installed (but unpackaged) file(s) found'
+#   2. The lua-lgi package is based on the (latest) release from 2017 which does
+#      not work with GTK4.
+# See also:
+#   - https://github.com/wmww/gtk4-layer-shell/issues/28
+#   - https://github.com/wmww/gtk4-layer-shell/issues/32#issuecomment-2089302515
+#   - https://github.com/lgi-devs/lgi/issues/225
+#   - https://github.com/lgi-devs/lgi/issues/278
 %meson \
-    -Dexamples=false \
-    -Ddocs=false \
-    -Dtests=false
+    %if %{with check}
+    -Dsmoke-tests=false \
+    -Dtests=true \
+    %endif
+    %{nil}
 %meson_build
 
 %install
 %meson_install
 
+%if %{with check}
+%check
+%meson_test
+%endif
+
 %files
 %license LICENSE
-%doc README.md
-%{_libdir}/libgtk4-layer-shell.so.0*
-%{_libdir}/girepository-1.0/Gtk4LayerShell-1.0.typelib
+%doc README.md CHANGELOG.md
+%{_libdir}/girepository-1.0/Gtk4LayerShell-*.typelib
+%{_libdir}/girepository-1.0/Gtk4SessionLock-*.typelib
+%{_libdir}/lib%{name}.so.%{version}
+%{_libdir}/lib%{name}.so.0
+%{_libdir}/liblayer-shell-preload.so
 
 %files devel
-%{_includedir}/gtk4-layer-shell/
-%{_libdir}/libgtk4-layer-shell.so
-%{_libdir}/pkgconfig/gtk4-layer-shell-0.pc
-%{_datadir}/gir-1.0/Gtk4LayerShell-1.0.gir
-%{_datadir}/vala/vapi/gtk4-layer-shell-0.deps
-%{_datadir}/vala/vapi/gtk4-layer-shell-0.vapi
+%{_datadir}/gir-1.0/Gtk4LayerShell-*.gir
+%{_datadir}/gir-1.0/Gtk4SessionLock-*.gir
+%{_datadir}/vala/vapi/%{name}-*
+%{_includedir}/%{name}/
+%{_libdir}/lib%{name}.so
+%{_libdir}/pkgconfig/*.pc
+%{_libdir}/liblayer-shell-preload.so
 
 %changelog
-* %{DATE} Thomas Mecattaf <thomas@mecattaf.dev> - 1.2.0-1
-- Update to 1.2.0
-- Support for GTK 4.16
-- Improved Wayland protocol compliance
+%autochangelog
