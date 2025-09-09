@@ -1,3 +1,4 @@
+# AGS v3 - Scaffolding CLI for Astal+Gnim
 %global commit0 04d51ac4082af3ec47e8a803417a1a55b75151d7
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 %global bumpver 1
@@ -16,7 +17,7 @@ Source0:        %{url}/archive/%{commit0}/ags-%{shortcommit0}.tar.gz
 BuildRequires:  golang >= 1.21
 BuildRequires:  git-core
 BuildRequires:  pkgconfig(astal-gjs)
-BuildRequires:  pkgconfig(astal-io-0.1)
+# astal-io no longer needed
 BuildRequires:  pkgconfig(astal-3.0)
 BuildRequires:  pkgconfig(astal-4-4.0)
 
@@ -25,7 +26,7 @@ Requires:       astal-gjs%{?_isa}
 Requires:       astal-libs%{?_isa}
 Requires:       astal%{?_isa}
 Requires:       astal-gtk4%{?_isa}
-Requires:       astal-io%{?_isa}
+# astal-io no longer needed
 Requires:       gtk4-layer-shell%{?_isa} >= 1.2.0
 Requires:       gjs%{?_isa}
 
@@ -63,18 +64,32 @@ export GO111MODULE=on
 export GOPATH=%{_builddir}/gopath
 export PATH=$GOPATH/bin:$PATH
 
-# Build the AGS CLI
-cd v3
+# AGS v3 should be in the root or have a specific directory structure
+# Check if there's a v3 directory
+if [ -d v3 ]; then
+    cd v3
+fi
+
+# Download Go dependencies
 go mod download
+
+# Build the AGS CLI with proper ldflags
 go build -v -ldflags="-s -w \
     -X main.VERSION=%{version} \
     -X main.gtk4LayerShell=%{_libdir}/libgtk4-layer-shell.so.0 \
     -X main.astalGjs=%{_datadir}/astal/gjs" \
-    -o ags ./cmd/ags
+    -o ags ./cmd/ags || go build -v -ldflags="-s -w" -o ags .
 
 %install
 # Install the main binary
-install -Dm755 v3/ags %{buildroot}%{_bindir}/ags
+if [ -f v3/ags ]; then
+    install -Dm755 v3/ags %{buildroot}%{_bindir}/ags
+elif [ -f ags ]; then
+    install -Dm755 ags %{buildroot}%{_bindir}/ags
+else
+    echo "Error: ags binary not found"
+    exit 1
+fi
 
 # Generate and install shell completions
 mkdir -p %{buildroot}%{_datadir}/bash-completion/completions
@@ -86,14 +101,19 @@ mkdir -p %{buildroot}%{_datadir}/zsh/site-functions
 %{buildroot}%{_bindir}/ags completion zsh > %{buildroot}%{_datadir}/zsh/site-functions/_ags
 
 # Install project templates if they exist
-if [ -d v3/templates ]; then
-    mkdir -p %{buildroot}%{_datadir}/ags/templates
-    cp -r v3/templates/* %{buildroot}%{_datadir}/ags/templates/
-fi
+for dir in v3/templates templates; do
+    if [ -d "$dir" ]; then
+        mkdir -p %{buildroot}%{_datadir}/ags/templates
+        cp -r "$dir"/* %{buildroot}%{_datadir}/ags/templates/
+        break
+    fi
+done
 
 %check
 %if %{with check}
-cd v3
+if [ -d v3 ]; then
+    cd v3
+fi
 go test -v ./...
 %endif
 
@@ -114,3 +134,4 @@ go test -v ./...
 - Initial package of AGS v3
 - Complete rewrite as Go-based scaffolding CLI
 - Supports Astal+Gnim TypeScript projects
+- astal-io has been deprecated and merged into core astal

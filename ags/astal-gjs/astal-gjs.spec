@@ -1,3 +1,6 @@
+# ========================================
+# astal-gjs.spec - GJS bindings (JavaScript)
+# ========================================
 %global astal_commit 20bd8318e4136fbd3d4eb2d64dbabc3acbc915dd
 %global astal_shortcommit %(c=%{astal_commit}; echo ${c:0:7})
 %global bumpver 1
@@ -15,12 +18,12 @@ URL:            https://github.com/Aylur/astal
 Source0:        %{url}/archive/%{astal_commit}/astal-%{astal_shortcommit}.tar.gz
 
 BuildRequires:  meson >= 0.59.0
-BuildRequires:  pkgconfig(astal-io-0.1)
 BuildRequires:  pkgconfig(astal-3.0)
 BuildRequires:  pkgconfig(astal-4-4.0)
+# astal-io no longer needed
 
 Requires:       gjs%{?_isa}
-Requires:       astal-io%{?_isa}
+# Remove version locks to avoid circular deps
 Requires:       astal%{?_isa}
 Requires:       astal-gtk4%{?_isa}
 

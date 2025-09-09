@@ -1,6 +1,6 @@
-%global astal_commit 7f2292f0792ffc9b127d4788b3dd3f104b5374b2
+%global astal_commit 20bd8318e4136fbd3d4eb2d64dbabc3acbc915dd
 %global astal_shortcommit %(c=%{astal_commit}; echo ${c:0:7})
-%global bumpver 14
+%global bumpver 1
 
 %global _lto_cflags %{nil}
 
@@ -23,7 +23,7 @@ BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(appmenu-glib-translator)
 BuildRequires:  pkgconfig(astal-3.0)
 BuildRequires:  pkgconfig(astal-4-4.0)
-BuildRequires:  pkgconfig(astal-io-0.1)
+# astal-io no longer needed
 BuildRequires:  pkgconfig(dbusmenu-gtk3-0.4)
 BuildRequires:  pkgconfig(fftw3)
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0)
@@ -41,10 +41,10 @@ BuildRequires:  pkgconfig(pam)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(wireplumber-0.5)
 
-# Runtime dependencies
-Requires:       astal%{?_isa} = %{version}-%{release}
-Requires:       astal-gtk4%{?_isa} = %{version}-%{release}
-Requires:       astal-io%{?_isa} = %{version}-%{release}
+# Runtime dependencies - remove version locks to avoid circular deps
+Requires:       astal%{?_isa}
+Requires:       astal-gtk4%{?_isa}
+# astal-io no longer needed
 
 # Optional runtime dependencies for full functionality
 Recommends:     bluez

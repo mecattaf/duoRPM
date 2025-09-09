@@ -1,6 +1,12 @@
+# ========================================
+# astal-gtk4.spec - GTK4 variant (Vala/C)
+# ========================================
 %global astal_commit 20bd8318e4136fbd3d4eb2d64dbabc3acbc915dd
 %global astal_shortcommit %(c=%{astal_commit}; echo ${c:0:7})
 %global bumpver 1
+
+# Bootstrap conditional
+%bcond bootstrap 0
 
 %global _vpath_srcdir lib/astal/gtk4
 
@@ -17,14 +23,19 @@ BuildRequires:  gcc
 BuildRequires:  meson >= 0.59.0
 BuildRequires:  vala
 BuildRequires:  valadoc
-BuildRequires:  pkgconfig(astal-io-0.1)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(gobject-introspection-1.0)
 BuildRequires:  pkgconfig(gtk4)
 BuildRequires:  pkgconfig(gtk4-layer-shell-0)
+# No longer requires astal-io
 
-Requires:       astal-io%{?_isa}
 Requires:       gtk4-layer-shell%{?_isa} >= 1.2.0
+# Remove version lock to avoid circular deps
+Requires:       astal%{?_isa}
+
+%if %{without bootstrap}
+Requires:       astal-libs%{?_isa}
+%endif
 
 %package        devel
 Summary:        Development files for %{name}
