@@ -8,7 +8,19 @@ REPO="Vladimir-csp/uwsm"
 VERSION_FIELD="Version:"
 
 # Get the latest version from GitHub
-LATEST=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | jq -r .tag_name | sed 's/^v//')
+LATEST=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | jq -r .tag_name 2>/dev/null | sed 's/^v//')
+
+# If no releases found or LATEST is null/empty, try tags
+if [ -z "$LATEST" ] || [ "$LATEST" = "null" ]; then
+    LATEST=$(curl -s "https://api.github.com/repos/$REPO/tags" | jq -r '.[0].name' 2>/dev/null | sed 's/^v//')
+fi
+
+# Final check - if still no version found, exit
+if [ -z "$LATEST" ] || [ "$LATEST" = "null" ]; then
+    echo "Error: Could not fetch version information from GitHub"
+    exit 1
+fi
+
 CURRENT=$(rpmspec -q --qf "%{version}\n" "$SPEC" | head -1)
 
 # Check if versions differ
