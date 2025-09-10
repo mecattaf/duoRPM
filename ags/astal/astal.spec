@@ -1,6 +1,6 @@
-%global astal_commit 20bd8318e4136fbd3d4eb2d64dbabc3acbc915dd
+%global astal_commit 344a6dce56437a190b99e516a6cab8332cccf19e
 %global astal_shortcommit %(c=%{astal_commit}; echo ${c:0:7})
-%global bumpver 1
+%global bumpver 2
 
 # Bootstrap conditional to handle circular dependencies
 %bcond bootstrap 0
