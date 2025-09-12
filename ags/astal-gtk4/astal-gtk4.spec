@@ -1,9 +1,9 @@
 # ========================================
 # astal-gtk4.spec - GTK4 variant (Vala/C)
 # ========================================
-%global astal_commit 344a6dce56437a190b99e516a6cab8332cccf19e
+%global astal_commit null
 %global astal_shortcommit %(c=%{astal_commit}; echo ${c:0:7})
-%global bumpver 2
+%global bumpver 3
 
 # Bootstrap conditional
 %bcond bootstrap 0
