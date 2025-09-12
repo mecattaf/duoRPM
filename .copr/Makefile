@@ -63,15 +63,11 @@ prebuild:
 		buildtype="rust"; \
 	elif grep -q "Name:.*cliphist\|Name:.*nwg-look\|Name:.*xcur2png" "$(SPECFILE)"; then \
 		buildtype="go"; \
-	elif grep -q "Name:.*aylurs-gtk-shell-v3" "$(SPECFILE)"; then \
-		buildtype="go"; \
 	elif grep -q "Name:.*python-\|Name:.*nwg-clipman\|Name:.*uwsm" "$(SPECFILE)"; then \
 		buildtype="python"; \
-	elif grep -q "Name:.*astal\|Name:.*astal-gtk4\|Name:.*astal-gjs\|Name:.*astal-libs\|Name:.*appmenu-glib-translator\|Name:.*gtk4-layer-shell" "$(SPECFILE)"; then \
-		buildtype="vala"; \
 	elif grep -q "Name:.*bibata-cursor-themes" "$(SPECFILE)"; then \
 		buildtype="theme"; \
-	elif grep -q "Name:.*lisgd\|Name:.*scroll\|Name:.*wayland\|Name:.*wlroots" "$(SPECFILE)"; then \
+	elif grep -q "Name:.*lisgd\|Name:.*scroll\|Name:.*wayland\|Name:.*wlroots\|Name:.*quickshell" "$(SPECFILE)"; then \
 		buildtype="gcc"; \
 	elif grep -q "Name:.*atuin\|Name:.*eza\|Name:.*starship\|Name:.*iwmenu" "$(SPECFILE)"; then \
 		buildtype="prebuilt"; \
