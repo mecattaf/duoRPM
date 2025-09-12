@@ -1,4 +1,4 @@
-.PHONY: prepare goprep rustprep pythonprep themesprep gccprep prebuiltprep valaprep srpm prebuild
+.PHONY: prepare goprep rustprep pythonprep themesprep gccprep prebuiltprep srpm prebuild
 
 # Define variables
 BUILDDIR := $(shell pwd)
@@ -32,31 +32,6 @@ prebuiltprep: prepare
 	# No special preparation needed for prebuilt binaries
 	dnf install --nodocs -y tar gzip xz
 
-valaprep: prepare
-	dnf install --nodocs -y \
-		vala valadoc meson \
-		gtk4-devel gtk-layer-shell-devel \
-		gtk4-layer-shell-devel \
-		gobject-introspection-devel \
-		json-glib-devel \
-		libpulse-devel \
-		NetworkManager-libnm-devel \
-		wireplumber-devel \
-		pipewire-devel \
-		pam-devel \
-		wayland-devel \
-		wayland-protocols-devel \
-		gtk3-devel \
-		gdk-pixbuf2-devel \
-		dbusmenu-gtk3-devel \
-		libnotify-devel \
-		upower-devel \
-		alsa-lib-devel \
-		fftw3-devel \
-		ncurses-devel \
-		SDL2-devel \
-		iniparser-devel
-
 prebuild:
 	@buildtype="unknown"; \
 	if grep -q "Name:.*wl-gammarelay-rs\|Name:.*matugen" "$(SPECFILE)"; then \
@@ -78,7 +53,6 @@ prebuild:
 		"python") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) pythonprep;; \
 		"theme") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) themesprep;; \
 		"gcc") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) gccprep;; \
-		"vala") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) valaprep;; \
 		"prebuilt") $(MAKE) -f $(lastword $(MAKEFILE_LIST)) prebuiltprep;; \
 		*) echo "Unknown package type in $(SPECFILE)"; exit 1;; \
 	esac
