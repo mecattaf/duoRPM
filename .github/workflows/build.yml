@@ -39,7 +39,14 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      # Build wayland components first (dependency for scroll)
+      # Build breakpad first (dependency for quickshell)
+      - name: Build breakpad (dependency)
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-gcc]') || contains(github.event.head_commit.message, '[build-wayland]')
+        run: |
+          breakpad_build_id=$(copr-cli build-package mecattaf/duoRPM --nowait --name breakpad 2>/dev/null | grep -o 'builds: [0-9]*' | cut -d' ' -f2 || echo "0")
+          echo "BREAKPAD_BUILD_ID=$breakpad_build_id" >> $GITHUB_ENV
+
+      # Build wayland components with breakpad dependency
       - name: Build wayland components
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-wayland]') || contains(github.event.head_commit.message, '[build-gcc]')
         run: |
@@ -55,9 +62,19 @@ jobs:
           fi
           echo "WLROOTS_BUILD_ID=$wlroots_build_id" >> $GITHUB_ENV
 
-          # Then build quickshell after wlroots
-          if [ "$wlroots_build_id" != "0" ]; then
-            quickshell_build_id=$(copr-cli build-package mecattaf/duoRPM --nowait --name quickshell --after-build-id "$wlroots_build_id" 2>/dev/null | grep -o 'builds: [0-9]*' | cut -d' ' -f2 || echo "0")
+          # Build quickshell after both wlroots and breakpad
+          dependencies=""
+          if [ "$wlroots_build_id" != "0" ] && [ "$BREAKPAD_BUILD_ID" != "0" ]; then
+            # Wait for both dependencies
+            dependencies="--after-build-id $wlroots_build_id,$BREAKPAD_BUILD_ID"
+          elif [ "$wlroots_build_id" != "0" ]; then
+            dependencies="--after-build-id $wlroots_build_id"
+          elif [ "$BREAKPAD_BUILD_ID" != "0" ]; then
+            dependencies="--after-build-id $BREAKPAD_BUILD_ID"
+          fi
+          
+          if [ -n "$dependencies" ]; then
+            quickshell_build_id=$(copr-cli build-package mecattaf/duoRPM --nowait --name quickshell $dependencies 2>/dev/null | grep -o 'builds: [0-9]*' | cut -d' ' -f2 || echo "0")
           else
             quickshell_build_id=$(copr-cli build-package mecattaf/duoRPM --nowait --name quickshell 2>/dev/null | grep -o 'builds: [0-9]*' | cut -d' ' -f2 || echo "0")
           fi

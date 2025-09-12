@@ -26,7 +26,7 @@ themesprep: prepare
 	dnf install --nodocs -y git-core python3-devel python3-pip python3-wheel
 
 gccprep: prepare
-	dnf install --nodocs -y gcc make
+	dnf install --nodocs -y gcc gcc-c++ make cmake ninja-build
 
 prebuiltprep: prepare
 	# No special preparation needed for prebuilt binaries
@@ -42,7 +42,7 @@ prebuild:
 		buildtype="python"; \
 	elif grep -q "Name:.*bibata-cursor-themes" "$(SPECFILE)"; then \
 		buildtype="theme"; \
-	elif grep -q "Name:.*lisgd\|Name:.*scroll\|Name:.*wayland\|Name:.*wlroots\|Name:.*quickshell" "$(SPECFILE)"; then \
+	elif grep -q "Name:.*lisgd\|Name:.*scroll\|Name:.*wayland\|Name:.*wlroots\|Name:.*quickshell\|Name:.*breakpad" "$(SPECFILE)"; then \
 		buildtype="gcc"; \
 	elif grep -q "Name:.*atuin\|Name:.*eza\|Name:.*starship\|Name:.*iwmenu" "$(SPECFILE)"; then \
 		buildtype="prebuilt"; \
