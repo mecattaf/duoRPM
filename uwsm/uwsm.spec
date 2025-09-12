@@ -74,6 +74,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_mandir}/man1/uwsm-app.1.*
 %{_mandir}/man3/%{name}-plugins.3.*
 %{_userunitdir}/fumon.service
+%{_userunitdir}/*-graphical.slice
+%{_userunitdir}/wayland-*.service
+%{_userunitdir}/wayland-*.target
 
 %changelog
 %autochangelog
