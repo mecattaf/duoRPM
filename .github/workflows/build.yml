@@ -57,10 +57,11 @@ jobs:
 
           # Then build quickshell after wlroots
           if [ "$wlroots_build_id" != "0" ]; then
-            copr-cli build-package mecattaf/duoRPM --nowait --name quickshell --after-build-id "$wlroots_build_id" 2>/dev/null || true
+            quickshell_build_id=$(copr-cli build-package mecattaf/duoRPM --nowait --name quickshell --after-build-id "$wlroots_build_id" 2>/dev/null | grep -o 'builds: [0-9]*' | cut -d' ' -f2 || echo "0")
           else
-            copr-cli build-package mecattaf/duoRPM --nowait --name quickshell 2>/dev/null || true
+            quickshell_build_id=$(copr-cli build-package mecattaf/duoRPM --nowait --name quickshell 2>/dev/null | grep -o 'builds: [0-9]*' | cut -d' ' -f2 || echo "0")
           fi
+          echo "QUICKSHELL_BUILD_ID=$quickshell_build_id" >> $GITHUB_ENV
 
       # Prevent race conditions by starting with xcur2png
       - name: Build xcur2png first (dependency)
