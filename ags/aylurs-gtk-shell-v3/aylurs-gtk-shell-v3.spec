@@ -1,7 +1,7 @@
 # AGS v3 - Scaffolding CLI for Astal+Gnim
-%global commit0 null
+%global commit0 48ada2c6ae240db1223258bad81f19eb0976d6ea
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global bumpver 3
+%global bumpver 4
 
 %bcond check 1
 
