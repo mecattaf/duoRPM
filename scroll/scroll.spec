@@ -1,7 +1,7 @@
-%global tag     1.11.4
+%global tag     1.11.5
 
 Name:           scroll
-Version:        1.11.4
+Version:        1.11.5
 Release:        1%{?dist}
 Summary:        i3-compatible Wayland compositor with a scrolling layout
 License:        MIT
@@ -164,6 +164,8 @@ install -d -m755 -pv %{buildroot}%{_sysconfdir}/%{name}/config.d
 %config(noreplace) %{_sysconfdir}/%{name}/config.minimal
 
 %changelog
+* Fri Sep 12 2025 Thomas Mecattaf  <thomas@mecattaf.dev> - 1.11.5-1
+- Update to 1.11.5
 * Sun Aug 17 2025 Thomas Mecattaf <thomas@mecattaf.dev> - 1.11.4-1
 - Update to 1.11.4
 * Sat Aug 16 2025 Thomas Mecattaf <thomas@mecattaf.dev> - null-1
