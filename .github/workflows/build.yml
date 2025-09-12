@@ -19,7 +19,7 @@ jobs:
       contains(github.event.head_commit.message, '[build-gcc]') ||
       contains(github.event.head_commit.message, '[build-themes]') ||
       contains(github.event.head_commit.message, '[build-prebuilt]') ||
-      contains(github.event.head_commit.message, '[build-wayland]') ||
+      contains(github.event.head_commit.message, '[build-wayland]')
     runs-on: ubuntu-latest
     container:
       image: 'registry.fedoraproject.org/fedora-minimal:latest'
