@@ -164,7 +164,7 @@ install -d -m755 -pv %{buildroot}%{_sysconfdir}/%{name}/config.d
 %config(noreplace) %{_sysconfdir}/%{name}/config.minimal
 
 %changelog
-* Fri Sep 25 2025 Thomas Mecattaf  <thomas@mecattaf.dev> - 1.11.6-1
+* Fri Sep 26 2025 Thomas Mecattaf  <thomas@mecattaf.dev> - 1.11.6-1
 - Update to 1.11.7
 * Sat Sep 20 2025 Thomas Mecattaf  <thomas@mecattaf.dev> - 1.11.6-1
 - Update to 1.11.6
