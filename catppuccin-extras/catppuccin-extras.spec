@@ -41,5 +41,5 @@ find %{buildroot}%{_datadir}/icons -type f -exec chmod 644 {} \;
 %{_datadir}/icons/default/
 
 %changelog
-* Fri Sep 27 2025 Mecattaf <thomas@mecattaf.dev> - 1.0.0-1
+* Sat Sep 27 2025 Mecattaf <thomas@mecattaf.dev> - 1.0.0-1
 - Initial package with GTK themes and icons
