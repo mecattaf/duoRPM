@@ -1,9 +1,9 @@
-%global abi_ver 0.19
+%global abi_ver 0.19.1
 # libliftoff does not bump soname on API changes
 %global liftoff_ver 0.5.0
 
 Name:           wlroots
-Version:        0.19.0
+Version:        0.19.1
 Release:        1%{?dist}
 Summary:        A modular Wayland compositor library
 
@@ -129,5 +129,7 @@ install -pm0644 -D '%{SOURCE3}' '%{buildroot}/%{_pkgdocdir}/examples/meson.build
 
 
 %changelog
+* Sat Sep 27 2025 Thomas Mecattaf <thomas@mecattaf.dev> - 0.19.1-1
+- Update to 0.19.1
 * Sat May 10 2025 Thomas Mecattaf <thomas@mecattaf.dev> - 0.19.0-1
 - Update to 0.19.0 final release
