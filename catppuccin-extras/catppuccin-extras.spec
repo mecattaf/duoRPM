@@ -38,7 +38,6 @@ find %{buildroot}%{_datadir}/icons -type f -exec chmod 644 {} \;
 %{_datadir}/themes/Catppuccin-Mocha-Standard-Green-Dark/
 %{_datadir}/themes/Catppuccin-Noir-Standard-Green-Dark/
 %{_datadir}/icons/Catppuccin-SE/
-%{_datadir}/icons/default/
 
 %changelog
 * Sat Sep 27 2025 Mecattaf <thomas@mecattaf.dev> - 1.0.0-1

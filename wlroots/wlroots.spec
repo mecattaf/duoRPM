@@ -1,4 +1,4 @@
-%global abi_ver 0.19.1
+%global abi_ver 0.19
 # libliftoff does not bump soname on API changes
 %global liftoff_ver 0.5.0
 
