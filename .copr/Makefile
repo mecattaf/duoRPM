@@ -44,7 +44,7 @@ prebuild:
    buildtype="theme"; \
 	elif grep -q "Name:.*lisgd\|Name:.*scroll\|Name:.*wayland\|Name:.*wlroots\|Name:.*quickshell\|Name:.*breakpad" "$(SPECFILE)"; then \
 		buildtype="gcc"; \
-	elif grep -q "Name:.*atuin\|Name:.*eza\|Name:.*starship\|Name:.*iwmenu" "$(SPECFILE)"; then \
+	elif grep -q "Name:.*atuin\|Name:.*eza\|Name:.*starship" "$(SPECFILE)"; then \
 		buildtype="prebuilt"; \
 	fi; \
 	case $$buildtype in \

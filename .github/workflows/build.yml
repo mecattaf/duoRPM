@@ -128,7 +128,6 @@ jobs:
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-python]')
         run: |
           copr-cli build-package mecattaf/duoRPM --nowait --name python-autotiling 2>/dev/null || true
-          copr-cli build-package mecattaf/duoRPM --nowait --name uwsm 2>/dev/null || true
           if [ "$CLIPHIST_BUILD_ID" != "0" ]; then
             copr-cli build-package mecattaf/duoRPM --nowait --name nwg-clipman --after-build-id "$CLIPHIST_BUILD_ID" 2>/dev/null || true
           else
@@ -142,7 +141,7 @@ jobs:
           parallel copr-cli build-package mecattaf/duoRPM --nowait --name ::: \
             bibata-cursor-themes catppuccin-extras 2>/dev/null || true
 
-      # Build prebuilt packages (atuin, eza, starship, iwmenu)
+      # Build prebuilt packages (atuin, eza, starship)
       - name: Build prebuilt packages
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-all]') || contains(github.event.head_commit.message, '[build-prebuilt]')
         run: |
@@ -150,7 +149,6 @@ jobs:
           copr-cli build-package mecattaf/duoRPM --nowait --name atuin 2>/dev/null || true
           copr-cli build-package mecattaf/duoRPM --nowait --name eza 2>/dev/null || true
           copr-cli build-package mecattaf/duoRPM --nowait --name starship 2>/dev/null || true
-          copr-cli build-package mecattaf/duoRPM --nowait --name iwmenu 2>/dev/null || true
 
       # Check build status (fixed version)
       - name: Check build status
